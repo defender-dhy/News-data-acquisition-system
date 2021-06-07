@@ -1,0 +1,8 @@
+/vue-admin-template/node_moudles/*
+/vue-element-admin/node_moudles/*
+*.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+myvenv/
+/utils/db.py
