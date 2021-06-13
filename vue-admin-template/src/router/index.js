@@ -57,6 +57,17 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
+    redirect: '/newsCrawlerAll',
+    children: [{
+      path: 'newsCrawlerAll',
+      name: 'newsCrawlerAll',
+      component: () => import('@/views/crawler/newsCrawlerAll'),
+      meta: { title: '新闻数据一键爬取', icon: 'el-icon-circle-plus' }
+    }]
+  },
+  {
+    path: '/',
+    component: Layout,
     redirect: '/newsCrawler',
     children: [{
       path: 'newsCrawler',

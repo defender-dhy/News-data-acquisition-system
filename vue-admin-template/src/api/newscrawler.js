@@ -21,10 +21,35 @@ export function getColumn(token, websiteName) {
     }
   })
 }
+
 export function newsCrawler(token, website, column) {
   return request({
     // url: '/vue-admin-template/user/info',
     url: '/crawler/newsCrawler/',
+    method: 'get',
+    params: {
+      website: website,
+      column: column
+    }
+  })
+}
+
+export function newsCrawlerAll(token, website, column) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/crawler/newsCrawlerAll/',
+    method: 'get',
+    params: {
+      website: website,
+      column: column
+    }
+  })
+}
+
+export function getProcess(token, website, column) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/crawler/getProcess/',
     method: 'get',
     params: {
       website: website,

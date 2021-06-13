@@ -10,7 +10,9 @@ from utils.db import mongo_client
 
 res = []
 
-def more_crawler(web_url, title_xpath, content_xpath, content_url, time_xpath, writer_xpath, button_xpath,website_name,lang,column,resource_type):
+
+def more_crawler(web_url, title_xpath, content_xpath, content_url, time_xpath, writer_xpath, button_xpath, website_name,
+                 lang, column, resource_type):
     # 加载启动项
     global res
     res = []
@@ -40,7 +42,10 @@ def more_crawler(web_url, title_xpath, content_xpath, content_url, time_xpath, w
     while True:
         try:
             print('%s %s %s' % (datetime.now(), web_url, '模拟点击获取更多信息中'))
-            element = driver.find_element_by_xpath(button_xpath)
+            try:
+                element = driver.find_element_by_xpath(button_xpath)
+            except:
+                break
             temp_title = driver.find_elements_by_xpath(title_xpath)[-1].text
             temp_query = {"title": temp_title}
             if (content.count_documents(temp_query) != 0):
@@ -112,18 +117,17 @@ def more_crawler(web_url, title_xpath, content_xpath, content_url, time_xpath, w
                      'resource_type': resource_type
                      }
             content.update_one(filter, {'$set': query}, upsert=True)
-    except :
+    except:
         pass
 
     print('%s %s %s %d' % (datetime.now(), web_url, '爬取数目:', len(title_list)))
     driver.quit()
-    temp = content.find({"website_name": website_name,"column":column})
+    temp = content.find({"website_name": website_name, "column": column})
     for x in temp:
         res.append({'website_name': x['website_name'], 'title': x['title'], 'content': x['content'], 'time': x['time'],
                     'url': x['url'], 'writer': x['writer']})
     myclient.close()
     return res
-
 
 
 if __name__ == '__main__':
@@ -144,6 +148,5 @@ if __name__ == '__main__':
         myclient.close()
         for x in xpath.find(myquery):
             more_crawler(x['web_url'], x['title_xpath'], x['content_xpath'], x['content_url'],
-                                    x['time_xpath'], x['writer_xpath'], x['button_xpath'],
-                                    x['website_name'],x['lang'],x['column'],x['resource_type'])
-
+                         x['time_xpath'], x['writer_xpath'], x['button_xpath'],
+                         x['website_name'], x['lang'], x['column'], x['resource_type'])
