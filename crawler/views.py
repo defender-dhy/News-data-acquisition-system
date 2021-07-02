@@ -11,7 +11,11 @@ from utils.wechat import wechatCrawler
 from utils.wechatByApi import wechatCrawlerByApi
 from utils.nextbtn import next_crawler
 from utils.morebtn import more_crawler
+from utils.nextButton import nextBtn_crawler
+from utils.moreButton import moreBtn_crawler
+from utils.nextButton import processManage
 import pymongo
+from mongo.crawlLog import *
 
 num = 0
 cnt = 0
@@ -53,7 +57,9 @@ class newsCrawler(APIView):
             # print(x['web_url'], x['title_xpath'], x['content_xpath'], x['content_url'],
             #       x['time_xpath'], x['writer_xpath'], x['button_xpath'],
             #       x['website_name'], x['lang'], x['column'], x['resource_type'])
-            if (x['type'] == 0):
+            # print(x['type'])
+            if x['type'] == '0':
+                print(x['type'])
                 res['data'] = next_crawler(x['web_url'], x['title_xpath'], x['content_xpath'], x['content_url'],
                                            x['time_xpath'], x['writer_xpath'], x['button_xpath'],
                                            x['website_name'], x['lang'], x['column'], x['resource_type'])
@@ -87,6 +93,7 @@ class newsCrawlerAll(APIView):
         for x in contents:
             data = {}
             if x['type'] == 0:
+                # print("*******************")
                 data = next_crawler(x['web_url'], x['title_xpath'], x['content_xpath'], x['content_url'],
                                     x['time_xpath'], x['writer_xpath'], x['button_xpath'],
                                     x['website_name'], x['lang'], x['column'], x['resource_type'])
@@ -118,4 +125,110 @@ class getProcess(APIView):
         global num
         global cnt
         res['data'] = {'num': num, 'cnt': cnt}
+        return Response(res, status=status.HTTP_200_OK)
+
+
+class newsCrawlerOne(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        res = {}
+        res["code"] = 20000
+        mongo_client = "mongodb://localhost:27017"
+        myclient = pymongo.MongoClient(mongo_client)
+        dblist = myclient.list_database_names()
+        if "cloud_academic" not in dblist:
+            raise Exception('cloud_academic数据库不存在')
+        mydb = myclient["cloud_academic"]
+        content = mydb['news_xpath']
+        manage = mydb['news_xpath_manage']
+        myquery = {"website_name": request.GET['website'], "column": request.GET['column']}
+        x = content.find_one(myquery)
+        xpathInfo = processManage(manage)
+        if x['type'] == '0':
+            res['data'] = nextBtn_crawler(x, xpathInfo)
+        else:
+            res['data'] = moreBtn_crawler(x, xpathInfo)
+        myclient.close()
+        return Response(res, status=status.HTTP_200_OK)
+
+
+class newsCrawlerMany(APIView):
+    '''
+    获取数据源list, 更新数据源爬取进度
+    '''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        global crawler_many_process
+        crawler_many_process = 0
+        res = {}
+        res["code"] = 20000
+        mongo_client = "mongodb://localhost:27017"
+        myclient = pymongo.MongoClient(mongo_client)
+        dblist = myclient.list_database_names()
+        if "cloud_academic" not in dblist:
+            raise Exception('cloud_academic数据库不存在')
+        mydb = myclient["cloud_academic"]
+        content = mydb['news_xpath']
+        manage = mydb['news_xpath_manage']
+        urlList = request.GET['url_list']
+        urlList = urlList.split(',')
+        resList = []
+        xpathInfo = processManage(manage)
+        for url in urlList:
+            myquery = {'web_url': url}
+            x = content.find_one(myquery)
+            if len(x) == 0:
+                continue
+            if x['type'] == '0':
+                resList.append(nextBtn_crawler(x, xpathInfo))
+            else:
+                resList.append(moreBtn_crawler(x, xpathInfo))
+            crawler_many_process = crawler_many_process + 100 / len(queryList)
+        res['data'] = resList
+        myclient.close()
+        return Response(res, status=status.HTTP_200_OK)
+
+
+class newsCrawlerMany(APIView):
+    '''
+    获取数据源list, 更新数据源爬取进度
+    '''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        global crawler_many_process
+        crawler_many_process = 0
+        res = {"code": 20000}
+        mongo_client = "mongodb://localhost:27017"
+        myclient = pymongo.MongoClient(mongo_client)
+        dblist = myclient.list_database_names()
+        if "cloud_academic" not in dblist:
+            raise Exception('cloud_academic数据库不存在')
+        mydb = myclient["cloud_academic"]
+        xpath_content = mydb['news_xpath']
+        strategy_content = mydb['crawler_strategy']
+        manage = mydb['news_xpath_manage']
+        myquery = {"策略名称": request.GET['strategy_name'], "开始日期": request.GET['beginDate']}
+        strategy_info = strategy_content.find_one(myquery)
+        urlList = strategy_info['网站url列表'].split(',')
+        resList = []
+        specLogList = []
+        xpathInfo = processManage(manage)
+        log = createLog(strategy_info)
+        for url in urlList:
+            myquery = {'web_url': url}
+            x = xpath_content.find_one(myquery)
+            specLog = createSpecLog(strategy_info, x)
+            if x['type'] == '0':
+                resList.append(nextBtn_crawler(x, xpathInfo))
+            else:
+                resList.append(moreBtn_crawler(x, xpathInfo))
+            crawler_many_process = crawler_many_process + 100 / len(urlList)
+            specLog['num'] = len(urlList)
+            specLogList.append(specLog)
+        addCrawlerLog(log, specLogList)
+        res['data'] = resList
+        myclient.close()
         return Response(res, status=status.HTTP_200_OK)

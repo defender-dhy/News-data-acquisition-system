@@ -46,6 +46,7 @@ def more_crawler(web_url, title_xpath, content_xpath, content_url, time_xpath, w
                 element = driver.find_element_by_xpath(button_xpath)
             except:
                 break
+            print(driver.find_elements_by_xpath(title_xpath))
             temp_title = driver.find_elements_by_xpath(title_xpath)[-1].text
             temp_query = {"title": temp_title}
             if (content.count_documents(temp_query) != 0):
