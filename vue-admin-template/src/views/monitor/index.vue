@@ -1,4 +1,4 @@
-<template xmlns:el-col="http://www.w3.org/1999/html" xmlns:el-form-item="http://www.w3.org/1999/html">
+<template>
   <el-main>
     <el-row>
       <el-col>
@@ -18,7 +18,6 @@
               reserve-keyword
               placeholder="网站名称"
               style="border-radius: 25%;"
-              size="small"
             >
               <el-option
                 v-for="item in websiteList"
@@ -36,7 +35,6 @@
               reserve-keyword
               placeholder="网站类型"
               style="border-radius: 25%;"
-              size="small"
             >
               <el-option
                 v-for="item in websiteList"
@@ -54,7 +52,6 @@
               reserve-keyword
               placeholder="国别"
               style="border-radius: 25%;"
-              size="small"
             >
               <el-option
                 v-for="item in websiteList"
@@ -72,7 +69,6 @@
               reserve-keyword
               placeholder="语言"
               style="border-radius: 25%;"
-              size="small"
             >
               <el-option
                 v-for="item in websiteList"
@@ -90,7 +86,7 @@
               reserve-keyword
               placeholder="所属领域"
               style="border-radius: 25%;"
-              size="small"
+
             >
               <el-option
                 v-for="item in websiteList"
@@ -108,7 +104,7 @@
               reserve-keyword
               placeholder="栏目名称"
               style="border-radius: 25%;"
-              size="small"
+
             >
               <el-option
                 v-for="item in websiteList"
@@ -126,7 +122,7 @@
               reserve-keyword
               placeholder="资源类型"
               style="border-radius: 25%;"
-              size="small"
+
             >
               <el-option
                 v-for="item in websiteList"
@@ -144,7 +140,7 @@
               reserve-keyword
               placeholder="资源相关性"
               style="border-radius: 25%;"
-              size="small"
+
             >
               <el-option
                 v-for="item in websiteList"
@@ -162,7 +158,7 @@
               reserve-keyword
               placeholder="更新频率"
               style="border-radius: 25%;"
-              size="small"
+
             >
               <el-option
                 v-for="item in websiteList"
@@ -180,7 +176,7 @@
               reserve-keyword
               placeholder="数据质量"
               style="border-radius: 25%;"
-              size="small"
+
             >
               <el-option
                 v-for="item in websiteList"
@@ -198,7 +194,7 @@
               reserve-keyword
               placeholder="入库时间"
               style="border-radius: 25%;"
-              size="small"
+
             >
               <el-option
                 v-for="item in websiteList"
@@ -232,13 +228,13 @@
       <el-col :span="7">
         <el-form ref="form" :model="crawlingForm" :inline="true">
           <el-form-item>
-            <el-link icon="el-icon-edit" type="primary" @click="strategySettingDialogVisible = true">设置策略</el-link>
+            <el-link icon="el-icon-edit" type="primary" @click="strategySettingDialogVisible = true">新增策略</el-link>
           </el-form-item>
 
           <el-form-item>
             <el-radio-group v-model="crawlingForm.crawlingRadio" size="mini">
-              <el-radio-button :label="0">自动模式</el-radio-button>
-              <el-radio-button :label="1">手动模式</el-radio-button>
+              <el-radio-button label="自动模式" />
+              <el-radio-button label="手动模式" />
             </el-radio-group>
           </el-form-item>
 
@@ -295,7 +291,8 @@
 
     <el-dialog
       title="设置策略"
-      :visible.sync="strategySettingDialogVisible">
+      :visible.sync="strategySettingDialogVisible"
+    >
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
         <el-form-item label="策略名称">
           <el-input v-model="strategySettingForm.name" />
@@ -315,12 +312,24 @@
             <el-radio label="每周" />
             <el-radio label="自定义" />
           </el-radio-group>
+          <el-input
+            v-if="strategySettingForm.frequency === '自定义'"
+            v-model="strategySettingForm.customFrequency"
+          >
+            <template slot="append">/ 小时</template>
+          </el-input>
         </el-form-item>
 
         <el-form-item label="启动日期">
           <el-radio-group v-model="strategySettingForm.date">
             <el-radio label="今天" />
             <el-radio label="自定义" />
+            <el-date-picker
+              v-if="strategySettingForm.date === '自定义'"
+              v-model="strategySettingForm.customDate"
+              type="date"
+              placeholder="选择日期">
+            </el-date-picker>
           </el-radio-group>
         </el-form-item>
 
@@ -328,6 +337,12 @@
           <el-radio-group v-model="strategySettingForm.startTime">
             <el-radio label="现在" />
             <el-radio label="自定义" />
+            <el-time-picker
+              v-if="strategySettingForm.startTime === '自定义'"
+              v-model="strategySettingForm.customStartTime"
+              placeholder="自定义启动时间"
+            >
+            </el-time-picker>
           </el-radio-group>
         </el-form-item>
 
@@ -335,6 +350,11 @@
           <el-radio-group v-model="strategySettingForm.stopTime">
             <el-radio label="采集完成" />
             <el-radio label="自定义" />
+            <el-time-picker
+              v-if="strategySettingForm.stopTime === '自定义'"
+              v-model="strategySettingForm.customStopTime"
+              placeholder="自定义停止时间">
+            </el-time-picker>
           </el-radio-group>
         </el-form-item>
 
@@ -353,18 +373,80 @@
     </el-dialog>
 
     <el-dialog
-      title="监控源详情"
-      :visible.sync="monitorSourceDetailDialogVisible">
-      <el-form ref="form" :model="strategySettingForm" label-width="80px">
-        <el-form-item label="网站名称："></el-form-item>
-        <el-form-item label="网址："></el-form-item>
-        <el-form-item label="简介："></el-form-item>
-        <el-form-item label="国别："></el-form-item>
-        <el-form-item label="语言："></el-form-item>
-        <el-form-item label="所属领域："></el-form-item>
-        <el-form-item label="入库时间："></el-form-item>
+      title="监测源详情"
+      :visible.sync="monitorSourceDetailDialogVisible"
+    >
+      <el-form ref="form" :model="monitorSourceDetailForm" label-width="80px">
+        <el-form-item label="网站名称">
+          <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.websiteName }}</span>
+          <el-input
+            v-else
+            v-model="monitorSourceDetailForm.websiteName"
+            placeholder="网站名称"
+            style="width: 300px"
+          />
+        </el-form-item>
+        <el-form-item label="网址">
+          <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.websiteUrl }}</span>
+          <el-input
+            v-else
+            v-model="monitorSourceDetailForm.websiteUrl"
+            placeholder="网址"
+            style="width: 300px"
+          />
+        </el-form-item>
+        <el-form-item label="简介">
+          <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.description }}</span>
+          <el-input
+            v-else
+            v-model="monitorSourceDetailForm.description"
+            placeholder="简介"
+            style="width: 300px"
+          />
+        </el-form-item>
+        <el-form-item label="国别">
+          <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.country }}</span>
+          <el-input
+            v-else
+            v-model="monitorSourceDetailForm.country"
+            placeholder="国别"
+            style="width: 300px"
+          />
+        </el-form-item>
+        <el-form-item label="语言">
+          <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.language }}</span>
+          <el-input
+            v-else
+            v-model="monitorSourceDetailForm.language"
+            placeholder="语言"
+            style="width: 300px"
+          />
+        </el-form-item>
+        <el-form-item label="所属领域">
+          <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.scope }}</span>
+          <el-input
+            v-else
+            v-model="monitorSourceDetailForm.scope"
+            placeholder="所属领域"
+            style="width: 300px"
+          />
+        </el-form-item>
+        <el-form-item label="入库时间">
+          <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.addTime }}</span>
+          <el-input
+            v-else
+            v-model="monitorSourceDetailForm.addTime"
+            placeholder="入库时间"
+            style="width: 300px"
+          />
+        </el-form-item>
         <el-form-item>
-          <el-button type="primary">我要修改</el-button>
+          <el-button
+            type="primary"
+            @click="monitorSourceDetailForm.modifyMode = !monitorSourceDetailForm.modifyMode"
+          >
+            {{ monitorSourceDetailForm.modifyMode ? "保存修改" : "修改数据" }}
+          </el-button>
         </el-form-item>
       </el-form>
 
@@ -388,13 +470,14 @@
 
     <el-dialog
       title="爬取日志详情"
-      :visible.sync="crawlLogDetailDialogVisible">
+      :visible.sync="crawlLogDetailDialogVisible"
+    >
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
-        <el-form-item label="日期："></el-form-item>
-        <el-form-item label="开始时间："></el-form-item>
-        <el-form-item label="结束时间："></el-form-item>
-        <el-form-item label="模式："></el-form-item>
-        <el-form-item label="数据：">
+        <el-form-item label="日期" />
+        <el-form-item label="开始时间" />
+        <el-form-item label="结束时间" />
+        <el-form-item label="模式" />
+        <el-form-item label="数据">
           <el-button type="primary">一键下载</el-button>
           <el-button type="primary">数据预览</el-button>
         </el-form-item>
@@ -464,7 +547,7 @@ export default {
       },
 
       crawlingForm: {
-        crawlingRadio: 0,
+        crawlingRadio: '自动模式',
         searchText: ''
       },
 
@@ -472,16 +555,30 @@ export default {
       strategySettingForm: {
         name: '',
         scope: '',
-        frequency: '',
-        date: '',
-        startTime: '',
-        stopTime: ''
+        frequency: '一次',
+        customFrequency: '',
+        date: '今天',
+        customDate: '',
+        startTime: '现在',
+        customStartTime: '',
+        stopTime: '采集完成',
+        customStopTime: ''
       },
       strategyChooseForm: {
         strategyChosenList: []
       },
 
       monitorSourceDetailDialogVisible: false,
+      monitorSourceDetailForm: {
+        modifyMode: false,
+        websiteName: '名字',
+        websiteUrl: '网址',
+        description: '简介',
+        country: '国别',
+        language: '语言',
+        scope: '所属领域',
+        addTime: '入库时间'
+      },
 
       crawlLogDetailDialogVisible: false
     }
