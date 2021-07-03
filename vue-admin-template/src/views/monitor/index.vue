@@ -86,7 +86,6 @@
               reserve-keyword
               placeholder="所属领域"
               style="border-radius: 25%;"
-
             >
               <el-option
                 v-for="item in websiteList"
@@ -99,15 +98,14 @@
 
           <el-form-item>
             <el-select
-              v-model="addEntryForm.columnName"
+              v-model="columnValue"
               filterable
               reserve-keyword
               placeholder="栏目名称"
               style="border-radius: 25%;"
-
             >
               <el-option
-                v-for="item in websiteList"
+                v-for="item in columnList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -117,15 +115,14 @@
 
           <el-form-item>
             <el-select
-              v-model="addEntryForm.resourceType"
+              v-model="resourceTypeValue"
               filterable
               reserve-keyword
               placeholder="资源类型"
               style="border-radius: 25%;"
-
             >
               <el-option
-                v-for="item in websiteList"
+                v-for="item in resourceTypeList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -140,7 +137,6 @@
               reserve-keyword
               placeholder="资源相关性"
               style="border-radius: 25%;"
-
             >
               <el-option
                 v-for="item in websiteList"
@@ -158,7 +154,6 @@
               reserve-keyword
               placeholder="更新频率"
               style="border-radius: 25%;"
-
             >
               <el-option
                 v-for="item in websiteList"
@@ -176,7 +171,6 @@
               reserve-keyword
               placeholder="数据质量"
               style="border-radius: 25%;"
-
             >
               <el-option
                 v-for="item in websiteList"
@@ -194,7 +188,6 @@
               reserve-keyword
               placeholder="入库时间"
               style="border-radius: 25%;"
-
             >
               <el-option
                 v-for="item in websiteList"
@@ -239,7 +232,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary">爬取</el-button>
+            <el-button type="primary" @click="onCrawler">爬取</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -262,19 +255,19 @@
     >
       <el-table-column type="selection" width="35" />
 
-      <el-table-column label="序号" sortable />
+      <el-table-column label="序号" prop="_id" sortable />
 
-      <el-table-column label="网站名称" sortable />
+      <el-table-column label="网站名称" prop="website_name" sortable />
 
-      <el-table-column label="网站类型" />
+      <el-table-column label="网站类型" prop="type" />
 
-      <el-table-column label="国别" />
+      <el-table-column label="国别" prop="lang" />
 
-      <el-table-column label="语言" />
+      <el-table-column label="语言" prop="lang" />
 
-      <el-table-column label="所属领域" />
+      <el-table-column label="所属领域" prop="resource_type" />
 
-      <el-table-column label="栏目名称" />
+      <el-table-column label="栏目名称" prop="column" />
 
       <el-table-column label="详情" />
     </el-table>
@@ -299,21 +292,25 @@
         </el-form-item>
 
         <el-form-item label="爬取范围">
-          <el-select v-model="strategySettingForm.scope" placeholder="请选择爬取范围">
-            <el-option label="区域一" value="shanghai" />
-            <el-option label="区域二" value="beijing" />
+          <el-select v-model="strategySettingForm.column" placeholder="请选择爬取栏目">
+            <el-option
+              v-for="item in columnList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
 
         <el-form-item label="启动频率">
-          <el-radio-group v-model="strategySettingForm.frequency">
+          <el-radio-group v-model="strategySettingForm.freq">
             <el-radio label="一次" />
             <el-radio label="每天" />
             <el-radio label="每周" />
             <el-radio label="自定义" />
           </el-radio-group>
           <el-input
-            v-if="strategySettingForm.frequency === '自定义'"
+            v-if="strategySettingForm.freq === '自定义'"
             v-model="strategySettingForm.customFrequency"
           >
             <template slot="append">/ 小时</template>
@@ -321,40 +318,39 @@
         </el-form-item>
 
         <el-form-item label="启动日期">
-          <el-radio-group v-model="strategySettingForm.date">
+          <el-radio-group v-model="strategySettingForm.beginDate">
             <el-radio label="今天" />
             <el-radio label="自定义" />
             <el-date-picker
-              v-if="strategySettingForm.date === '自定义'"
+              v-if="strategySettingForm.beginDate === '自定义'"
               v-model="strategySettingForm.customDate"
               type="date"
-              placeholder="选择日期">
-            </el-date-picker>
+              placeholder="选择日期"
+            />
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="启动时间">
-          <el-radio-group v-model="strategySettingForm.startTime">
+          <el-radio-group v-model="strategySettingForm.beginTime">
             <el-radio label="现在" />
             <el-radio label="自定义" />
             <el-time-picker
-              v-if="strategySettingForm.startTime === '自定义'"
+              v-if="strategySettingForm.beginTime === '自定义'"
               v-model="strategySettingForm.customStartTime"
               placeholder="自定义启动时间"
-            >
-            </el-time-picker>
+            />
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="停止时间">
-          <el-radio-group v-model="strategySettingForm.stopTime">
+          <el-radio-group v-model="strategySettingForm.endTime">
             <el-radio label="采集完成" />
             <el-radio label="自定义" />
             <el-time-picker
-              v-if="strategySettingForm.stopTime === '自定义'"
+              v-if="strategySettingForm.endTime === '自定义'"
               v-model="strategySettingForm.customStopTime"
-              placeholder="自定义停止时间">
-            </el-time-picker>
+              placeholder="自定义停止时间"
+            />
           </el-radio-group>
         </el-form-item>
 
@@ -440,14 +436,12 @@
             style="width: 300px"
           />
         </el-form-item>
-        <el-form-item>
-          <el-button
-            type="primary"
-            @click="monitorSourceDetailForm.modifyMode = !monitorSourceDetailForm.modifyMode"
-          >
-            {{ monitorSourceDetailForm.modifyMode ? "保存修改" : "修改数据" }}
-          </el-button>
-        </el-form-item>
+        <el-button
+          type="primary"
+          @click="monitorSourceDetailForm.modifyMode = !monitorSourceDetailForm.modifyMode"
+        >
+          {{ monitorSourceDetailForm.modifyMode ? '保存修改' : '修改数据' }}
+        </el-button>
       </el-form>
 
       <el-table
@@ -512,6 +506,9 @@
 </template>
 
 <script>
+import { newsCrawlerMany, getXpathByColumn, getXpathByName, getXpathValueNameList } from '@/api/newsCrawlerAll'
+import { addStrategy } from '@/api/crawlStrategy'
+
 export default {
   data() {
     return {
@@ -526,6 +523,9 @@ export default {
       columnList: [],
       websites: [],
       columns: [],
+      resourceTypeValue: '',
+      resourceTypes: [],
+      resourceTypeList: [],
 
       totalCount: 0,
       incrementCount: 0,
@@ -554,15 +554,17 @@ export default {
       strategySettingDialogVisible: false,
       strategySettingForm: {
         name: '',
-        scope: '',
-        frequency: '一次',
+        freq: '一次',
         customFrequency: '',
-        date: '今天',
+        beginDate: '今天',
         customDate: '',
-        startTime: '现在',
+        beginTime: '现在',
         customStartTime: '',
-        stopTime: '采集完成',
-        customStopTime: ''
+        endTime: '采集完成',
+        customStopTime: '',
+        column: '',
+        urlList: [],
+        freqType: ''
       },
       strategyChooseForm: {
         strategyChosenList: []
@@ -583,13 +585,38 @@ export default {
       crawlLogDetailDialogVisible: false
     }
   },
+  watch: {
+    columnValue(newValue, oldValue) {
+      getXpathByColumn(this.token, newValue).then(response => {
+        this.newsTableData = response['data']
+      }).catch()
+    }
+  },
+  mounted() {
+    getXpathValueNameList(this.token, 'column').then(response => {
+      this.columns = response['data']
+      this.columnList = this.columns.map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+    }).catch()
+    getXpathValueNameList(this.token, 'resource_type').then(response => {
+      this.resourceTypes = response['data']
+      this.resourceTypeList = this.resourceTypes.map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+    }).catch()
+  },
   methods: {
     onSaveStrategy() {
-      return null
+      addStrategy(this.token, this.strategySettingForm)
     },
 
     onChooseStrategy() {
       return null
+    },
+
+    onCrawler() {
+      newsCrawlerMany(this.token, this.strategySettingForm.name, this.strategySettingForm.beginDate)
     }
   }
 }
@@ -599,13 +626,16 @@ export default {
 .el-row {
   margin-bottom: 20px;
 }
+
 .tb-edit .el-input {
   display: none
 }
+
 .tb-edit .current-row .el-input {
   display: block
 }
-.tb-edit .current-row .el-input+span {
+
+.tb-edit .current-row .el-input + span {
   display: none
 }
 </style>

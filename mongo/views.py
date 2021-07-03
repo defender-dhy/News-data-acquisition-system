@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework_jwt.serializers import jwt_payload_handler, jwt_encode_handler
 from rest_framework import permissions
-from mongo.utils import getColumnList, getWebSiteNameList
+from mongo.utils import getColumnList, getWebSiteNameList, getXpathValueList
 from istic import settings
 from django.views.decorators.csrf import csrf_exempt
 import time
@@ -40,6 +40,17 @@ class getCollegeName(APIView):
         return Response(res)
 
 
+class getXpathValueNameList(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        res = {}
+        res["data"] = getXpathValueList(request.GET['valuename'])
+        # print(res['data'])
+        res["code"] = 20000
+        return Response(res)
+
+
 class addStrategy(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -69,6 +80,28 @@ class xpathManage(APIView):
             res['code'] = 20000
         else:
             res['code'] = 20010
+        return Response(res)
+
+
+class getXpathByColumn(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        res = {}
+        query = {'column': request.GET['column']}
+        res['data'] = getXpathList(query)
+        res['code'] = 20000
+        return Response(res)
+
+
+class getXpathByName(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        res = {}
+        query = {'website_name': request.GET['website_name']}
+        res['data'] = getXpathList(query)
+        res['code'] = 20000
         return Response(res)
 
 
