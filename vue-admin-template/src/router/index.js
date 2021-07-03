@@ -87,6 +87,17 @@ export const constantRoutes = [
       meta: { title: '微信公众号爬虫', icon: 'el-icon-circle-plus' }
     }]
   },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/mainPage',
+    children: [{
+      path: 'mainPage',
+      name: 'mainPage',
+      component: () => import('@/views/monitor/index'),
+      meta: { title: '监测源列表', icon: 'el-icon-circle-plus' }
+    }]
+  },
   // {
   //   path: '/',
   //   component: Layout,

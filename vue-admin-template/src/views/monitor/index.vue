@@ -103,7 +103,7 @@
 
           <el-form-item>
             <el-select
-              v-model="addEntryForm.columnName"
+              v-model="columnValue"
               filterable
               reserve-keyword
               placeholder="栏目名称"
@@ -111,7 +111,7 @@
               size="small"
             >
               <el-option
-                v-for="item in websiteList"
+                v-for="item in columnList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -121,7 +121,7 @@
 
           <el-form-item>
             <el-select
-              v-model="addEntryForm.resourceType"
+              v-model="resourceTypeValue"
               filterable
               reserve-keyword
               placeholder="资源类型"
@@ -129,13 +129,14 @@
               size="small"
             >
               <el-option
-                v-for="item in websiteList"
+                v-for="item in resourceTypeList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
               />
             </el-select>
           </el-form-item>
+
 
           <el-form-item>
             <el-select
@@ -243,7 +244,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary">爬取</el-button>
+            <el-button type="primary" @click="onCrawler">爬取</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -264,23 +265,31 @@
       stripe="true"
       fit="true"
     >
-      <el-table-column type="selection" width="35" />
+      <el-table-column type="selection" width="35"/>
 
-      <el-table-column label="序号" sortable />
+      <el-table-column label="序号" prop="_id" sortable>
+      </el-table-column>
 
-      <el-table-column label="网站名称" sortable />
+      <el-table-column label="网站名称" prop="website_name" sortable>
+      </el-table-column>
 
-      <el-table-column label="网站类型" />
+      <el-table-column label="网站类型" prop="type">
+      </el-table-column>
 
-      <el-table-column label="国别" />
+      <el-table-column label="国别" prop="lang">
+      </el-table-column>
 
-      <el-table-column label="语言" />
+      <el-table-column label="语言" prop="lang">
+      </el-table-column>
 
-      <el-table-column label="所属领域" />
+      <el-table-column label="所属领域" prop="resource_type">
+      </el-table-column>
 
-      <el-table-column label="栏目名称" />
+      <el-table-column label="栏目名称" prop="column">
+      </el-table-column>
 
-      <el-table-column label="详情" />
+      <el-table-column label="详情">
+      </el-table-column>
     </el-table>
 
     <el-pagination
@@ -295,46 +304,51 @@
 
     <el-dialog
       title="设置策略"
-      :visible.sync="strategySettingDialogVisible">
+      :visible.sync="strategySettingDialogVisible"
+    >
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
         <el-form-item label="策略名称">
-          <el-input v-model="strategySettingForm.name" />
+          <el-input v-model="strategySettingForm.name"/>
         </el-form-item>
 
         <el-form-item label="爬取范围">
-          <el-select v-model="strategySettingForm.scope" placeholder="请选择爬取范围">
-            <el-option label="区域一" value="shanghai" />
-            <el-option label="区域二" value="beijing" />
+          <el-select v-model="strategySettingForm.column" placeholder="请选择爬取栏目">
+            <el-option
+              v-for="item in columnList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
 
         <el-form-item label="启动频率">
-          <el-radio-group v-model="strategySettingForm.frequency">
-            <el-radio label="一次" />
-            <el-radio label="每天" />
-            <el-radio label="每周" />
-            <el-radio label="自定义" />
+          <el-radio-group v-model="strategySettingForm.freq">
+            <el-radio label="一次"/>
+            <el-radio label="每天"/>
+            <el-radio label="每周"/>
+            <el-radio label="自定义"/>
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="启动日期">
-          <el-radio-group v-model="strategySettingForm.date">
-            <el-radio label="今天" />
-            <el-radio label="自定义" />
+          <el-radio-group v-model="strategySettingForm.beginDate">
+            <el-radio label="今天"/>
+            <el-radio label="自定义"/>
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="启动时间">
-          <el-radio-group v-model="strategySettingForm.startTime">
-            <el-radio label="现在" />
-            <el-radio label="自定义" />
+          <el-radio-group v-model="strategySettingForm.beginTime">
+            <el-radio label="现在"/>
+            <el-radio label="自定义"/>
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="停止时间">
-          <el-radio-group v-model="strategySettingForm.stopTime">
-            <el-radio label="采集完成" />
-            <el-radio label="自定义" />
+          <el-radio-group v-model="strategySettingForm.endTime">
+            <el-radio label="采集完成"/>
+            <el-radio label="自定义"/>
           </el-radio-group>
         </el-form-item>
 
@@ -343,7 +357,7 @@
         </el-form-item>
       </el-form>
 
-      <el-divider />
+      <el-divider/>
 
       <el-form ref="form" :model="strategyChooseForm" label-width="80px">
         <el-form-item>
@@ -354,7 +368,8 @@
 
     <el-dialog
       title="监控源详情"
-      :visible.sync="monitorSourceDetailDialogVisible">
+      :visible.sync="monitorSourceDetailDialogVisible"
+    >
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
         <el-form-item label="网站名称："></el-form-item>
         <el-form-item label="网址："></el-form-item>
@@ -375,20 +390,21 @@
         stripe="true"
         fit="true"
       >
-        <el-table-column type="selection" width="35" />
-        <el-table-column label="栏目序号" sortable />
-        <el-table-column label="栏目名称" sortable />
-        <el-table-column label="资源类型" />
-        <el-table-column label="资源相关性" />
-        <el-table-column label="更新频率" />
-        <el-table-column label="质量" />
-        <el-table-column label="备注" />
+        <el-table-column type="selection" width="35"/>
+        <el-table-column label="栏目序号" sortable/>
+        <el-table-column label="栏目名称" sortable/>
+        <el-table-column label="资源类型"/>
+        <el-table-column label="资源相关性"/>
+        <el-table-column label="更新频率"/>
+        <el-table-column label="质量"/>
+        <el-table-column label="备注"/>
       </el-table>
     </el-dialog>
 
     <el-dialog
       title="爬取日志详情"
-      :visible.sync="crawlLogDetailDialogVisible">
+      :visible.sync="crawlLogDetailDialogVisible"
+    >
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
         <el-form-item label="日期："></el-form-item>
         <el-form-item label="开始时间："></el-form-item>
@@ -407,12 +423,12 @@
         stripe="true"
         fit="true"
       >
-        <el-table-column label="序号" sortable />
-        <el-table-column label="网站名称" sortable />
-        <el-table-column label="栏目名称" />
-        <el-table-column label="数据量" />
-        <el-table-column label="状态" />
-        <el-table-column label="备注" />
+        <el-table-column label="序号" sortable/>
+        <el-table-column label="网站名称" sortable/>
+        <el-table-column label="栏目名称"/>
+        <el-table-column label="数据量"/>
+        <el-table-column label="状态"/>
+        <el-table-column label="备注"/>
       </el-table>
 
       <el-pagination
@@ -429,6 +445,9 @@
 </template>
 
 <script>
+import { newsCrawlerMany, getXpathByColumn, getXpathByName, getXpathValueNameList } from '@/api/newsCrawlerAll'
+import { addStrategy } from '@/api/crawlStrategy'
+
 export default {
   data() {
     return {
@@ -443,6 +462,9 @@ export default {
       columnList: [],
       websites: [],
       columns: [],
+      resourceTypeValue: '',
+      resourceTypes: [],
+      resourceTypeList: [],
 
       totalCount: 0,
       incrementCount: 0,
@@ -471,11 +493,13 @@ export default {
       strategySettingDialogVisible: false,
       strategySettingForm: {
         name: '',
-        scope: '',
-        frequency: '',
-        date: '',
-        startTime: '',
-        stopTime: ''
+        freq: '',
+        beginDate: '',
+        beginTime: '',
+        endTime: '',
+        column: '',
+        urlList: [],
+        freqType: ''
       },
       strategyChooseForm: {
         strategyChosenList: []
@@ -486,13 +510,38 @@ export default {
       crawlLogDetailDialogVisible: false
     }
   },
+  mounted() {
+    getXpathValueNameList(this.token, 'column').then(response => {
+      this.columns = response['data']
+      this.columnList = this.columns.map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+    }).catch()
+    getXpathValueNameList(this.token, 'resource_type').then(response => {
+      this.resourceTypes = response['data']
+      this.resourceTypeList = this.resourceTypes.map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+    }).catch()
+  },
+  watch: {
+    columnValue(newValue, oldValue) {
+      getXpathByColumn(this.token, newValue).then(response => {
+        this.newsTableData = response['data']
+      }).catch()
+    }
+  },
   methods: {
     onSaveStrategy() {
-      return null
+      addStrategy(this.token, this.strategySettingForm)
     },
 
     onChooseStrategy() {
       return null
+    },
+
+    onCrawler() {
+      newsCrawlerMany(this.token, this.strategySettingForm.name, this.strategySettingForm.beginDate)
     }
   }
 }
@@ -502,13 +551,16 @@ export default {
 .el-row {
   margin-bottom: 20px;
 }
+
 .tb-edit .el-input {
   display: none
 }
+
 .tb-edit .current-row .el-input {
   display: block
 }
-.tb-edit .current-row .el-input+span {
+
+.tb-edit .current-row .el-input + span {
   display: none
 }
 </style>

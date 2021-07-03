@@ -212,14 +212,28 @@ class newsCrawlerMany(APIView):
         manage = mydb['news_xpath_manage']
         myquery = {"策略名称": request.GET['strategy_name'], "开始日期": request.GET['beginDate']}
         strategy_info = strategy_content.find_one(myquery)
-        urlList = strategy_info['网站url列表'].split(',')
+        column = strategy_info['栏目名称']
+        xpathLs = None
+        if column != '':
+            query = {'column': column}
+            xpathLs = xpath_content.find(query)
         resList = []
         specLogList = []
         xpathInfo = processManage(manage)
         log = createLog(strategy_info)
-        for url in urlList:
-            myquery = {'web_url': url}
-            x = xpath_content.find_one(myquery)
+        # urlList = strategy_info['网站url列表'].split(',')
+        # for url in urlList:
+        #     myquery = {'web_url': url}
+        #     x = xpath_content.find_one(myquery)
+        #     specLog = createSpecLog(strategy_info, x)
+        #     if x['type'] == '0':
+        #         resList.append(nextBtn_crawler(x, xpathInfo))
+        #     else:
+        #         resList.append(moreBtn_crawler(x, xpathInfo))
+        #     crawler_many_process = crawler_many_process + 100 / len(urlList)
+        #     specLog['num'] = len(urlList)
+        #     specLogList.append(specLog)
+        for x in xpathLs:
             specLog = createSpecLog(strategy_info, x)
             if x['type'] == '0':
                 resList.append(nextBtn_crawler(x, xpathInfo))

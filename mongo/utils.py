@@ -39,3 +39,13 @@ def getColumnList(database, website_name):
         # print(res)
         myclient.close()
         return res
+
+
+def getXpathValueList(valuename):
+    myclient = pymongo.MongoClient("mongodb://localhost:27017")
+    mydb = myclient["cloud_academic"]
+    mycol = mydb["news_xpath"]
+    ls = []
+    for x in mycol.find():
+        ls.append(x[valuename])
+    return ls

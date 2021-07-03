@@ -7,5 +7,6 @@ urlpatterns = [
     url(r'^newsCrawler/$', views.newsCrawlerOne.as_view()),
     url(r'^newsCrawlerAll/$', views.newsCrawlerAll.as_view()),
     url(r'^getProcess/$', views.newsCrawlerAll.as_view()),
-    url(r'^newsCrawlerOne/$', views.newsCrawlerOne.as_view())
+    url(r'^newsCrawlerOne/$', views.newsCrawlerOne.as_view()),
+    url(r'^newsCrawlerMany/$', views.newsCrawlerMany.as_view())
 ]
