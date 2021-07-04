@@ -235,12 +235,12 @@
       </el-card>
     </el-row>
 
-    <el-row type="flex" justify="space-between">
-      <el-col>
+    <el-row>
+      <el-col :span="4">
         <el-button type="primary" icon="el-icon-circle-plus-outline">导入数据</el-button>
       </el-col>
 
-      <el-col>
+      <el-col :span="14">
         <el-form ref="form" :model="crawlingForm" :inline="true">
           <el-form-item>
             <el-link
@@ -250,6 +250,17 @@
             >
               新增策略
             </el-link>
+          </el-form-item>
+
+          <el-form-item>
+            <el-select v-model="value" placeholder="请选择" size="mini">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
 
           <el-form-item>
@@ -265,7 +276,7 @@
         </el-form>
       </el-col>
 
-      <el-col>
+      <el-col :span="6">
         <el-input
           v-model="crawlingForm.searchText"
           placeholder="查询"
@@ -321,29 +332,30 @@
     <el-row style="margin-top: 20px">
       <el-col :span="12" style="padding-right: 5px">
         <el-card shadow="never">
-          <el-form ref="form" :model="monitorSourceDetailForm" label-width="80px">
-            <el-form-item label="网站名称">
-              <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.websiteName }}</span>
-            </el-form-item>
-            <el-form-item label="网址">
-              <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.websiteUrl }}</span>
-            </el-form-item>
-            <el-form-item label="简介">
-              <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.description }}</span>
-            </el-form-item>
-            <el-form-item label="国别">
-              <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.country }}</span>
-            </el-form-item>
-            <el-form-item label="语言">
-              <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.language }}</span>
-            </el-form-item>
-            <el-form-item label="所属领域">
-              <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.scope }}</span>
-            </el-form-item>
-            <el-form-item label="入库时间">
-              <span v-if="!monitorSourceDetailForm.modifyMode">{{ monitorSourceDetailForm.addTime }}</span>
-            </el-form-item>
-          </el-form>
+          <el-table
+            class="dataTable tb-edit"
+            :data="
+              newsTableData.slice(
+                (currentPage - 1) * pageSize,
+                currentPage * pageSize
+              )
+            "
+            highlight-current-row
+            stripe="true"
+            fit="true"
+          >
+            <el-table-column label="策略名称" sortable />
+
+            <el-table-column label="爬取范围" />
+
+            <el-table-column label="启动频率" />
+
+            <el-table-column label="启动日期" />
+
+            <el-table-column label="启动时间" />
+
+            <el-table-column label="停止时间" />
+          </el-table>
         </el-card>
       </el-col>
 
@@ -361,19 +373,19 @@
             stripe="true"
             fit="true"
           >
-            <el-table-column v-if="addEntryForm.websiteNameChecked" label="日期" prop="website_name" sortable />
+            <el-table-column label="日期" sortable />
 
-            <el-table-column v-if="addEntryForm.websiteTypeChecked" label="开始时间" prop="type" />
+            <el-table-column label="开始时间" />
 
-            <el-table-column v-if="addEntryForm.countryChecked" label="结束时间" prop="lang" />
+            <el-table-column label="结束时间" />
 
-            <el-table-column v-if="addEntryForm.languageChecked" label="模式" prop="lang" />
+            <el-table-column label="模式" />
 
-            <el-table-column v-if="addEntryForm.fieldChecked" label="爬取数量" prop="resource_type" />
+            <el-table-column label="爬取数量" />
 
-            <el-table-column v-if="addEntryForm.columnNameChecked" label="数据量" prop="column" />
+            <el-table-column label="数据量" />
 
-            <el-table-column v-if="addEntryForm.columnNameChecked" label="数据量" prop="column" />
+            <el-table-column label="数据量" />
 
             <el-table-column label="详情" />
           </el-table>
@@ -384,7 +396,7 @@
     <el-dialog title="设置策略" :visible.sync="strategySettingDialogVisible">
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
         <el-form-item label="策略名称">
-          <el-input v-model="strategySettingForm.name" />
+          <el-input v-model="strategySettingForm.name" placeholder="请输入名称" />
         </el-form-item>
 
         <el-form-item label="爬取范围">
@@ -402,27 +414,27 @@
         </el-form-item>
 
         <el-form-item label="启动频率">
-          <el-radio-group v-model="strategySettingForm.freq">
+          <el-radio-group v-model="strategySettingForm.freqType">
             <el-radio label="一次" />
             <el-radio label="每天" />
             <el-radio label="每周" />
             <el-radio label="自定义" />
           </el-radio-group>
           <el-input
-            v-if="strategySettingForm.freq === '自定义'"
-            v-model="strategySettingForm.customFrequency"
+            v-if="strategySettingForm.freqType === '自定义'"
+            v-model="strategySettingForm.freq"
           >
             <template slot="append">/ 小时</template>
           </el-input>
         </el-form-item>
 
         <el-form-item label="启动日期">
-          <el-radio-group v-model="strategySettingForm.beginDate">
+          <el-radio-group v-model="strategySettingForm.beginDateType">
             <el-radio label="今天" />
             <el-radio label="自定义" />
             <el-date-picker
-              v-if="strategySettingForm.beginDate === '自定义'"
-              v-model="strategySettingForm.customDate"
+              v-if="strategySettingForm.beginDateType === '自定义'"
+              v-model="strategySettingForm.beginDate"
               type="date"
               placeholder="选择日期"
             />
@@ -430,39 +442,35 @@
         </el-form-item>
 
         <el-form-item label="启动时间">
-          <el-radio-group v-model="strategySettingForm.beginTime">
+          <el-radio-group v-model="strategySettingForm.beginTimeType">
             <el-radio label="现在" />
             <el-radio label="自定义" />
             <el-time-picker
-              v-if="strategySettingForm.beginTime === '自定义'"
-              v-model="strategySettingForm.customStartTime"
+              v-if="strategySettingForm.beginTimeType === '自定义'"
+              v-model="strategySettingForm.beginTime"
               placeholder="自定义启动时间"
+              format="HH:mm"
+              value-format="HH:mm"
             />
           </el-radio-group>
         </el-form-item>
 
         <el-form-item label="停止时间">
-          <el-radio-group v-model="strategySettingForm.endTime">
+          <el-radio-group v-model="strategySettingForm.endTimeType">
             <el-radio label="采集完成" />
             <el-radio label="自定义" />
             <el-time-picker
-              v-if="strategySettingForm.endTime === '自定义'"
-              v-model="strategySettingForm.customStopTime"
+              v-if="strategySettingForm.endTimeType === '自定义'"
+              v-model="strategySettingForm.endTime"
               placeholder="自定义停止时间"
+              format="HH:mm"
+              value-format="HH:mm"
             />
           </el-radio-group>
         </el-form-item>
 
         <el-form-item>
           <el-button type="primary" @click="onSaveStrategy">保存当前策略</el-button>
-        </el-form-item>
-      </el-form>
-
-      <el-divider />
-
-      <el-form ref="form" :model="strategyChooseForm" label-width="80px">
-        <el-form-item>
-          <el-button type="primary" @click="onChooseStrategy">确定</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -680,21 +688,18 @@ export default {
       strategySettingDialogVisible: false,
       strategySettingForm: {
         name: '',
-        freq: '',
-        beginDate: '',
-        beginTime: '',
-        endTime: '',
+        freqType: '一次',
+        beginDateType: '今天',
+        beginTimeType: '现在',
+        endTimeType: '采集完成',
+        freq: '12',
+        beginDate: '2021/7/1',
+        beginTime: '20:27',
+        endTime: '20:30',
         column: '',
-        urlList: [],
-        freqType: '',
-        customFrequency: '',
-        customStartTime: '',
-        customStopTime: '',
-        customDate: ''
+        urlList: []
       },
-      strategyChooseForm: {
-        strategyChosenList: []
-      },
+      strategyList: [],
 
       monitorSourceDetailDialogVisible: false,
       monitorSourceDetailForm: {
