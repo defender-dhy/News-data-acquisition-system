@@ -235,10 +235,16 @@ class newsCrawlerMany(APIView):
         #     specLogList.append(specLog)
         for x in xpathLs:
             specLog = createSpecLog(strategy_info, x)
-            if x['type'] == '0':
-                resList.append(nextBtn_crawler(x, xpathInfo))
-            else:
-                resList.append(moreBtn_crawler(x, xpathInfo))
+            try:
+                if x['type'] == '0':
+                    resList.append(nextBtn_crawler(x, xpathInfo))
+                else:
+                    resList.append(moreBtn_crawler(x, xpathInfo))
+            except Exception as e:
+                specLog['status'] = '失败'
+                print(e)
+                print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
+                print('wrong on line:' + str(e.__traceback__.tb_lineno))  # 发生异常所在的行数
             crawler_many_process = crawler_many_process + 100 / len(urlList)
             specLog['num'] = len(urlList)
             specLogList.append(specLog)
