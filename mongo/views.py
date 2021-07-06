@@ -69,8 +69,13 @@ class xpathManage(APIView):
 
     def get(self, request):
         res = {}
-        res['data'] = getXpathManage()
-        res['code'] = 20000
+        try:
+            res['data'] = getXpathManage()
+            res['code'] = 20000
+        except Exception as e:
+            print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
+            print(e.__traceback__.tb_lineno)  # 发生异常所在的行数
+            print(e)
         return Response(res)
 
     def post(self, request):
@@ -100,7 +105,10 @@ class getXpathByName(APIView):
     def get(self, request):
         res = {}
         query = {'website_name': request.GET['website_name']}
-        res['data'] = getXpathList(query)
+        if request.GET['website_name'] == '':
+            res['data'] = getXpathList(None)
+        else:
+            res['data'] = getXpathList(query)
         res['code'] = 20000
         return Response(res)
 
@@ -124,6 +132,19 @@ class manageSpecXpath(APIView):
         return Response(res)
 
 
+class modifyOneSpecXpath(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        res = {}
+        ret = modifyOneXpath(request.GET['cont'])
+        if ret == 1:
+            res['code'] = 20000
+        else:
+            res['code'] = 20010
+        return Response(res)
+
+
 class crawlerLog(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -140,5 +161,23 @@ class crawlerSpecLog(APIView):
     def get(self, request):
         res = {}
         res['data'] = getAllSpecCrawlerLog(request.GET['filter'])
+        res['code'] = 20000
+        return Response(res)
+
+
+class getCrawlerStrategyLs(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        res = {}
+        key = request.GET['keyName']
+        data = None
+        if key == 'all':
+            data = getAllStrategyLs()
+        elif key == 'name':
+            data = getStrategyNameList()
+        elif key == 'beginDate':
+            data = getStrategyBeginDateList()
+        res['data'] = data
         res['code'] = 20000
         return Response(res)

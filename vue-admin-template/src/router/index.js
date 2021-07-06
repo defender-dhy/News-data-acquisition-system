@@ -98,6 +98,17 @@ export const constantRoutes = [
       meta: { title: '监测源列表', icon: 'el-icon-circle-plus' }
     }]
   },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/xpathManage',
+    children: [{
+      path: 'xpathManage',
+      name: 'xpathManage',
+      component: () => import('@/views/monitor/xPathManager'),
+      meta: { title: '监测源字段管理', icon: 'el-icon-circle-plus' }
+    }]
+  },
   // {
   //   path: '/',
   //   component: Layout,

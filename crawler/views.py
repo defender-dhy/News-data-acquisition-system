@@ -153,42 +153,42 @@ class newsCrawlerOne(APIView):
         return Response(res, status=status.HTTP_200_OK)
 
 
-class newsCrawlerMany(APIView):
-    '''
-    获取数据源list, 更新数据源爬取进度
-    '''
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request):
-        global crawler_many_process
-        crawler_many_process = 0
-        res = {}
-        res["code"] = 20000
-        mongo_client = "mongodb://localhost:27017"
-        myclient = pymongo.MongoClient(mongo_client)
-        dblist = myclient.list_database_names()
-        if "cloud_academic" not in dblist:
-            raise Exception('cloud_academic数据库不存在')
-        mydb = myclient["cloud_academic"]
-        content = mydb['news_xpath']
-        manage = mydb['news_xpath_manage']
-        urlList = request.GET['url_list']
-        urlList = urlList.split(',')
-        resList = []
-        xpathInfo = processManage(manage)
-        for url in urlList:
-            myquery = {'web_url': url}
-            x = content.find_one(myquery)
-            if len(x) == 0:
-                continue
-            if x['type'] == '0':
-                resList.append(nextBtn_crawler(x, xpathInfo))
-            else:
-                resList.append(moreBtn_crawler(x, xpathInfo))
-            crawler_many_process = crawler_many_process + 100 / len(queryList)
-        res['data'] = resList
-        myclient.close()
-        return Response(res, status=status.HTTP_200_OK)
+# class newsCrawlerMany(APIView):
+#     '''
+#     获取数据源list, 更新数据源爬取进度
+#     '''
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     def get(self, request):
+#         global crawler_many_process
+#         crawler_many_process = 0
+#         res = {}
+#         res["code"] = 20000
+#         mongo_client = "mongodb://localhost:27017"
+#         myclient = pymongo.MongoClient(mongo_client)
+#         dblist = myclient.list_database_names()
+#         if "cloud_academic" not in dblist:
+#             raise Exception('cloud_academic数据库不存在')
+#         mydb = myclient["cloud_academic"]
+#         content = mydb['news_xpath']
+#         manage = mydb['news_xpath_manage']
+#         urlList = request.GET['url_list']
+#         urlList = urlList.split(',')
+#         resList = []
+#         xpathInfo = processManage(manage)
+#         for url in urlList:
+#             myquery = {'web_url': url}
+#             x = content.find_one(myquery)
+#             if len(x) == 0:
+#                 continue
+#             if x['type'] == '0':
+#                 resList.append(nextBtn_crawler(x, xpathInfo))
+#             else:
+#                 resList.append(moreBtn_crawler(x, xpathInfo))
+#             crawler_many_process = crawler_many_process + 100 / len(queryList)
+#         res['data'] = resList
+#         myclient.close()
+#         return Response(res, status=status.HTTP_200_OK)
 
 
 class newsCrawlerMany(APIView):
@@ -214,9 +214,11 @@ class newsCrawlerMany(APIView):
         strategy_info = strategy_content.find_one(myquery)
         column = strategy_info['栏目名称']
         xpathLs = None
+        n = 0
         if column != '':
             query = {'column': column}
             xpathLs = xpath_content.find(query)
+            n = xpathLs.count()
         resList = []
         specLogList = []
         xpathInfo = processManage(manage)
@@ -233,21 +235,27 @@ class newsCrawlerMany(APIView):
         #     crawler_many_process = crawler_many_process + 100 / len(urlList)
         #     specLog['num'] = len(urlList)
         #     specLogList.append(specLog)
+        cnt = 0
         for x in xpathLs:
             specLog = createSpecLog(strategy_info, x)
+            tmpres = None
             try:
                 if x['type'] == '0':
-                    resList.append(nextBtn_crawler(x, xpathInfo))
+                    tmpres = nextBtn_crawler(x, xpathInfo)
+                    resList.append(tmpres)
                 else:
-                    resList.append(moreBtn_crawler(x, xpathInfo))
+                    tmpres = moreBtn_crawler(x, xpathInfo)
+                    resList.append(tmpres)
             except Exception as e:
                 specLog['status'] = '失败'
                 print(e)
                 print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
                 print('wrong on line:' + str(e.__traceback__.tb_lineno))  # 发生异常所在的行数
-            crawler_many_process = crawler_many_process + 100 / len(urlList)
-            specLog['num'] = len(urlList)
+            crawler_many_process = crawler_many_process + 100 / n
+            specLog['num'] = len(tmpres)
+            cnt += len(tmpres)
             specLogList.append(specLog)
+        log['num'] = cnt
         addCrawlerLog(log, specLogList)
         res['data'] = resList
         myclient.close()

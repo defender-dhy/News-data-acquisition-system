@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^getXpathByColumn/$', views.getXpathByColumn.as_view()),
     url(r'^getXpathByName/$', views.getXpathByName.as_view()),
     url(r'^getXpathValueNameList/$', views.getXpathValueNameList.as_view()),
+    url(r'^getCrawlerStrategyLs/$', views.getCrawlerStrategyLs.as_view()),
+    url(r'^modifyOneSpecXpath/$', views.modifyOneSpecXpath.as_view()),
 ]

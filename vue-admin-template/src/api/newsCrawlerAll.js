@@ -34,6 +34,17 @@ export function getXpathByName(token, website_name) {
   })
 }
 
+export function getAllXpath(token) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/getXpathByName/',
+    method: 'get',
+    params: {
+      website_name: ''
+    }
+  })
+}
+
 export function getXpathValueNameList(token, valuename) {
   return request({
     // url: '/vue-admin-template/user/info',
@@ -44,4 +55,37 @@ export function getXpathValueNameList(token, valuename) {
     }
   })
 }
+
+export function getXpathManage(token) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/xpathManage/',
+    method: 'get'
+  })
+}
+
+export function modifyXpathManage(token, cont) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/xpathManage/',
+    method: 'post',
+    params: {
+      cont: cont
+    }
+  })
+}
+
+export function modifyOneSpecXpath(token, cont) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/modifyOneSpecXpath/',
+    method: 'post',
+    params: {
+      cont: cont
+    }
+  })
+}
+
+
+
 

@@ -10,3 +10,15 @@ export function addStrategy(token, strategySettingForm) {
     }
   })
 }
+
+export function getStrategyLs(token, keyName) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/getCrawlerStrategyLs/',
+    method: 'get',
+    params: {
+      keyName: keyName
+    }
+  })
+}
+

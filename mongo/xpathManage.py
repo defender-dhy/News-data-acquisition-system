@@ -1,33 +1,46 @@
 from utils.db import mongo_client
 import pymongo
+import json
 
 
 def getXpathManage():
-    myclient = pymongo.MongoClient(mongo_client)
-    mydb = myclient['cloud_academic']
-    content = mydb['news_xpath_manage']
-    res = []
-    for c in content.find():
-        cd = {}
-        for k in c.keys():
-            if k != '_id':
-                cd[k] = c[k]
-        res.append(cd)
-    return res
+    try:
+        myclient = pymongo.MongoClient(mongo_client)
+        mydb = myclient['cloud_academic']
+        content = mydb['news_xpath_manage']
+        res = []
+        for c in content.find():
+            cd = {'type': c['类型'], 'inSpec': c['是否在详情页'], 'saveName': c['数据库存储名字'],
+                  'needCrawl': c['需要爬取'], 'needSave': c['需要存储'], 'EnglishName': c['字段名称英'], 'ChineseName': c['字段名称中']}
+            res.append(cd)
+        return res
+    except Exception as e:
+        print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
+        print(e.__traceback__.tb_lineno)  # 发生异常所在的行数
+        print(e)
+        return []
 
 
 def postXpathManage(cont):
     try:
-        filter = {'字段名称英': cont['English_name']}
-        query = {'字段名称英': cont['English_name'], '字段名称中': cont['Chinese_name'], '是否在详情页': cont['inSpec'],
-                 '需要爬取': cont['needCrawler'], '数据库存储名字': cont['savaName'], '类型': cont['type']}
+        # print(cont)
+        # cont.replace('null', 'None')
+        cont = json.loads(cont)
+        # cont = eval(cont.strip())
+        # print(cont['EnglishName'])
+        filter = {'字段名称英': cont['EnglishName']}
+        query = {'字段名称英': cont['EnglishName'], '字段名称中': cont['ChineseName'], '是否在详情页': cont['inSpec'],
+                 '需要爬取': cont['needCrawl'], '数据库存储名字': cont['saveName'], '类型': cont['type'], '需要存储': cont['needSave']}
+        myclient = pymongo.MongoClient(mongo_client)
         mydb = myclient['cloud_academic']
         content = mydb['news_xpath_manage']
         content.update_one(filter, {'$set': query}, upsert=True)
         return 1
     except Exception as e:
+        print('fail')
+        print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
+        print(e.__traceback__.tb_lineno)  # 发生异常所在的行数
         print(e)
-    finally:
         return 0
 
 
@@ -36,11 +49,18 @@ def getXpathList(query):
     mydb = myclient['cloud_academic']
     content = mydb['news_xpath']
     res = []
-    for c in content.find(query):
-        cd = {}
-        for k in c.keys():
-            cd[k] = c[k]
-        res.append(cd)
+    if query is None:
+        for c in content.find():
+            cd = {}
+            for k in c.keys():
+                cd[k] = c[k]
+            res.append(cd)
+    else:
+        for c in content.find(query):
+            cd = {}
+            for k in c.keys():
+                cd[k] = c[k]
+            res.append(cd)
     return res
 
 
@@ -60,5 +80,18 @@ def modifyXpath(rawfilterLs, rawqueryLs):
         return 1
     except Exception as e:
         print(e)
-    finally:
+
+
+def modifyOneXpath(cont):
+    try:
+        myclient = pymongo.MongoClient(mongo_client)
+        mydb = myclient['cloud_academic']
+        content = mydb['news_xpath']
+        cont = json.loads(cont)
+        filter = {'_id': cont['_id']}
+        del cont['_id']
+        content.update_one(filter, {'$set': cont}, upsert=True)
+        return 1
+    except Exception as e:
+        print(e)
         return 0

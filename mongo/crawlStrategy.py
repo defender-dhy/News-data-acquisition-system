@@ -23,3 +23,34 @@ def addNewStrategy(strategy):
         print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
         print(e.__traceback__.tb_lineno)  # 发生异常所在的行数
         return 0
+
+
+def getStrategyNameList():
+    myclient = pymongo.MongoClient(mongo_client)
+    mydb = myclient['cloud_academic']
+    content = mydb['crawler_strategy']
+    nameLs = []
+    for c in content.find():
+        nameLs.append(c['策略名称'])
+    return nameLs
+
+
+def getStrategyBeginDateList():
+    myclient = pymongo.MongoClient(mongo_client)
+    mydb = myclient['cloud_academic']
+    content = mydb['crawler_strategy']
+    nameLs = []
+    for c in content.find():
+        nameLs.append(c['开始日期'])
+    return nameLs
+
+
+def getAllStrategyLs():
+    myclient = pymongo.MongoClient(mongo_client)
+    mydb = myclient['cloud_academic']
+    content = mydb['crawler_strategy']
+    strategyLs = []
+    for c in content.find():
+        strategyLs.append({'beginDate': c['开始日期'], 'beginTime': c['开始时间'], 'endTime': '结束时间', 'name': c['策略名称'],
+                           'freq': c['爬虫频率'], 'column': c['栏目名称']})
+    return strategyLs

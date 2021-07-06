@@ -104,7 +104,7 @@ def moreBtn_crawler(x, xpathInfo):
                         query[xpathInfo[key]['saveName']] = x[key]
                 except:
                     query[xpathInfo[key]['saveName']] = ''
-                    continues
+                    continue
             cnt += 1
             if cnt % 10 == 0:
                 print('%s %s %s %d' % (datetime.now(), x['web_url'], '写入数据库进度:', cnt))
