@@ -359,6 +359,7 @@
             highlight-current-row
             stripe="true"
             fit="true"
+            @row-dblclick="showStrategySettingDetail"
           >
             <el-table-column label="策略名称" prop="name" sortable />
 
@@ -403,6 +404,7 @@
             highlight-current-row
             stripe="true"
             fit="true"
+            @row-dblclick="showCrawlerLogTableData"
           >
             <el-table-column label="日期" prop="beginDate" sortable />
 
@@ -632,11 +634,27 @@
     </el-dialog>
 
     <el-dialog title="爬取日志详情" :visible.sync="crawlLogDetailDialogVisible">
-      <el-form ref="form" :model="strategySettingForm" label-width="80px">
-        <el-form-item label="日期" />
-        <el-form-item label="开始时间" />
-        <el-form-item label="结束时间" />
-        <el-form-item label="模式" />
+      <el-form ref="form" :model="crawlLogDetailForm" label-width="80px">
+        <el-form-item label="日期">
+          <span>
+            {{ crawlLogDetailForm.beginDate }}
+          </span>
+        </el-form-item>
+        <el-form-item label="开始时间">
+          <span>
+            {{ crawlLogDetailForm.beginTime }}
+          </span>
+        </el-form-item>
+        <el-form-item label="结束时间">
+          <span>
+            {{ crawlLogDetailForm.endDate }}
+          </span>
+        </el-form-item>
+        <el-form-item label="模式">
+          <span>
+            {{ crawlLogDetailForm.mode }}
+          </span>
+        </el-form-item>
         <el-form-item label="数据">
           <el-button type="primary">一键下载</el-button>
           <el-button type="primary">数据预览</el-button>
@@ -655,22 +673,22 @@
         stripe="true"
         fit="true"
       >
-        <el-table-column label="序号" sortable />
-        <el-table-column label="网站名称" sortable />
-        <el-table-column label="栏目名称" />
-        <el-table-column label="数据量" />
-        <el-table-column label="状态" />
-        <el-table-column label="备注" />
+        <el-table-column label="序号" prop="index" sortable />
+        <el-table-column label="网站名称" prop="websiteName" sortable />
+        <el-table-column label="栏目名称" prop="columnName" />
+        <el-table-column label="数据量" prop="dataSize" />
+        <el-table-column label="状态" prop="status" />
+        <el-table-column label="备注" prop="comment" />
       </el-table>
 
       <el-row type="flex" justify="center">
         <el-pagination
           class="pagination"
-          :current-page="currentPage"
+          :current-page="crawlLogDetailTableDataCurrentPage"
           :page-sizes="10"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="newsTableData.length"
+          :total="crawlLogDetailTableData.length"
         />
       </el-row>
     </el-dialog>
@@ -693,8 +711,8 @@ export default {
     return {
       name: '',
       newsTableData: [],
-      strategyTableData: [],
-      crawlerLogTableData: [],
+      strategyTableData: [{ name: '12' }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+      crawlerLogTableData: [{ mode: 1 }, {}],
       pageSize: 10, // 每页的数据条数
       websiteValue: '', // 选中
       websiteList: [], // select框数据
@@ -766,7 +784,6 @@ export default {
         column: '',
         urlList: []
       },
-      strategyList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
 
       monitorSourceDetailDialogVisible: false,
       monitorSourceDetailForm: {
@@ -781,7 +798,9 @@ export default {
       },
 
       crawlLogDetailDialogVisible: false,
-      monitorSourceDetailData: []
+      monitorSourceDetailData: [],
+
+      crawlLogDetailForm: {}
     }
   },
   watch: {
@@ -865,6 +884,17 @@ export default {
         this.strategySettingForm.name,
         this.strategySettingForm.beginDate
       )
+    },
+
+    showStrategySettingDetail(row, column, event) {
+      this.strategySettingDialogVisible = true
+      this.strategySettingForm = row
+    },
+
+    showCrawlerLogTableData(row, column, event) {
+      this.crawlLogDetailDialogVisible = true
+      this.crawlLogDetailForm = row
+      console.log(row)
     }
   }
 }
