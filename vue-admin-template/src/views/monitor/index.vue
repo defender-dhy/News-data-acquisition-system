@@ -259,8 +259,7 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              />
             </el-select>
             <el-select v-model="strategySettingForm.beginDate" placeholder="请选择" size="mini">
               <el-option
@@ -268,20 +267,19 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              />
             </el-select>
           </el-form-item>
 
           <el-form-item>
             <el-radio-group v-model="crawlingForm.crawlingRadio" size="mini">
-              <el-radio-button label="自动模式"/>
-              <el-radio-button label="手动模式"/>
+              <el-radio-button label="自动模式" />
+              <el-radio-button label="手动模式" />
             </el-radio-group>
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" @click="onCrawler" size="mini">爬取</el-button>
+            <el-button type="primary" size="mini" @click="onCrawler">爬取</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -304,38 +302,38 @@
         class="dataTable tb-edit"
         :data="
           newsTableData.slice(
-            (currentPage - 1) * pageSize,
-            currentPage * pageSize
+            (newsTableDataCurrentPage - 1) * pageSize,
+            newsTableDataCurrentPage * pageSize
           )
         "
         highlight-current-row
         stripe="true"
         fit="true"
       >
-        <el-table-column type="selection" width="35"/>
+        <el-table-column type="selection" width="35" />
 
-        <el-table-column label="序号" prop="_id" sortable/>
+        <el-table-column label="序号" prop="_id" sortable />
 
-        <el-table-column v-if="addEntryForm.websiteNameChecked" label="网站名称" prop="website_name" sortable/>
+        <el-table-column v-if="addEntryForm.websiteNameChecked" label="网站名称" prop="website_name" sortable />
 
-        <el-table-column v-if="addEntryForm.websiteTypeChecked" label="网站类型" prop="type"/>
+        <el-table-column v-if="addEntryForm.websiteTypeChecked" label="网站类型" prop="type" />
 
-        <el-table-column v-if="addEntryForm.countryChecked" label="国别" prop="lang"/>
+        <el-table-column v-if="addEntryForm.countryChecked" label="国别" prop="lang" />
 
-        <el-table-column v-if="addEntryForm.languageChecked" label="语言" prop="lang"/>
+        <el-table-column v-if="addEntryForm.languageChecked" label="语言" prop="lang" />
 
-        <el-table-column v-if="addEntryForm.fieldChecked" label="所属领域" prop="resource_type"/>
+        <el-table-column v-if="addEntryForm.fieldChecked" label="所属领域" prop="resource_type" />
 
-        <el-table-column v-if="addEntryForm.columnNameChecked" label="栏目名称" prop="column"/>
+        <el-table-column v-if="addEntryForm.columnNameChecked" label="栏目名称" prop="column" />
 
-        <el-table-column label="详情"/>
+        <el-table-column label="详情" />
       </el-table>
 
       <el-row type="flex" justify="center">
         <el-pagination
           class="pagination"
-          :current-page="currentPage"
-          :page-sizes="[1, 5, 10, 20]"
+          :current-page="newsTableDataCurrentPage"
+          :page-sizes="10"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="newsTableData.length"
@@ -354,26 +352,37 @@
             class="dataTable tb-edit"
             :data="
               strategyTableData.slice(
-                (currentPage - 1) * pageSize,
-                currentPage * pageSize
+                (strategyTableDataCurrentPage - 1) * pageSize,
+                strategyTableDataCurrentPage * pageSize
               )
             "
             highlight-current-row
             stripe="true"
             fit="true"
           >
-            <el-table-column label="策略名称" prop="name" sortable/>
+            <el-table-column label="策略名称" prop="name" sortable />
 
-            <el-table-column label="爬取范围" prop="column"/>
+            <el-table-column label="爬取范围" prop="column" />
 
-            <el-table-column label="启动频率" prop="freq"/>
+            <el-table-column label="启动频率" prop="freq" />
 
-            <el-table-column label="启动日期" prop="beginDate"/>
+            <el-table-column label="启动日期" prop="beginDate" />
 
-            <el-table-column label="启动时间" prop="beginTime"/>
+            <el-table-column label="启动时间" prop="beginTime" />
 
-            <el-table-column label="停止时间" prop="endTime"/>
+            <el-table-column label="停止时间" prop="endTime" />
           </el-table>
+
+          <el-row type="flex" justify="center">
+            <el-pagination
+              class="pagination"
+              :current-page="strategyTableDataCurrentPage"
+              :page-sizes="10"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="strategyTableData.length"
+            />
+          </el-row>
         </el-card>
       </el-col>
 
@@ -387,32 +396,43 @@
             class="dataTable tb-edit"
             :data="
               crawlerLogTableData.slice(
-                (currentPage - 1) * pageSize,
-                currentPage * pageSize
+                (crawlerLogTableDataCurrentPage - 1) * pageSize,
+                crawlerLogTableDataCurrentPage * pageSize
               )
             "
             highlight-current-row
             stripe="true"
             fit="true"
           >
-            <el-table-column label="日期" prop="beginDate" sortable/>
+            <el-table-column label="日期" prop="beginDate" sortable />
 
-            <el-table-column label="开始时间" prop="beginTime"/>
+            <el-table-column label="开始时间" prop="beginTime" />
 
-            <el-table-column label="结束时间" prop="endTime"/>
+            <el-table-column label="结束时间" prop="endTime" />
 
-            <el-table-column label="模式" prop="mode"/>
+            <el-table-column label="模式" prop="mode" />
 
-            <el-table-column label="爬取数量" prop="num"/>
+            <el-table-column label="爬取数量" prop="num" />
 
-            <el-table-column label="策略名称" prop="strategyName"/>
-
-            <!--            <el-table-column label="数据量"/>-->
+            <el-table-column label="策略名称" prop="strategyName" />
 
             <!--            <el-table-column label="数据量"/>-->
 
-            <el-table-column label="详情"/>
+            <!--            <el-table-column label="数据量"/>-->
+
+            <el-table-column label="详情" />
           </el-table>
+
+          <el-row type="flex" justify="center">
+            <el-pagination
+              class="pagination"
+              :current-page="crawlerLogTableDataCurrentPage"
+              :page-sizes="10"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="newsTableData.length"
+            />
+          </el-row>
         </el-card>
       </el-col>
     </el-row>
@@ -420,7 +440,7 @@
     <el-dialog title="设置策略" :visible.sync="strategySettingDialogVisible">
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
         <el-form-item label="策略名称">
-          <el-input v-model="strategySettingForm.name" placeholder="请输入名称"/>
+          <el-input v-model="strategySettingForm.name" placeholder="请输入名称" />
         </el-form-item>
 
         <el-form-item label="爬取范围">
@@ -439,10 +459,10 @@
 
         <el-form-item label="启动频率">
           <el-radio-group v-model="strategySettingForm.freqType">
-            <el-radio label="一次"/>
-            <el-radio label="每天"/>
-            <el-radio label="每周"/>
-            <el-radio label="自定义"/>
+            <el-radio label="一次" />
+            <el-radio label="每天" />
+            <el-radio label="每周" />
+            <el-radio label="自定义" />
           </el-radio-group>
           <el-input
             v-if="strategySettingForm.freqType === '自定义'"
@@ -454,8 +474,8 @@
 
         <el-form-item label="启动日期">
           <el-radio-group v-model="strategySettingForm.beginDateType">
-            <el-radio label="今天"/>
-            <el-radio label="自定义"/>
+            <el-radio label="今天" />
+            <el-radio label="自定义" />
             <el-date-picker
               v-if="strategySettingForm.beginDateType === '自定义'"
               v-model="strategySettingForm.beginDate"
@@ -467,8 +487,8 @@
 
         <el-form-item label="启动时间">
           <el-radio-group v-model="strategySettingForm.beginTimeType">
-            <el-radio label="现在"/>
-            <el-radio label="自定义"/>
+            <el-radio label="现在" />
+            <el-radio label="自定义" />
             <el-time-picker
               v-if="strategySettingForm.beginTimeType === '自定义'"
               v-model="strategySettingForm.beginTime"
@@ -481,8 +501,8 @@
 
         <el-form-item label="停止时间">
           <el-radio-group v-model="strategySettingForm.endTimeType">
-            <el-radio label="采集完成"/>
-            <el-radio label="自定义"/>
+            <el-radio label="采集完成" />
+            <el-radio label="自定义" />
             <el-time-picker
               v-if="strategySettingForm.endTimeType === '自定义'"
               v-model="strategySettingForm.endTime"
@@ -580,32 +600,43 @@
       <el-table
         class="dataTable tb-edit"
         :data="
-          newsTableData.slice(
-            (currentPage - 1) * pageSize,
-            currentPage * pageSize
+          monitorSourceDetailData.slice(
+            (monitorSourceDetailDataCurrentPage - 1) * pageSize,
+            monitorSourceDetailDataCurrentPage * pageSize
           )
         "
         highlight-current-row
         stripe="true"
         fit="true"
       >
-        <el-table-column type="selection" width="35"/>
-        <el-table-column label="栏目序号" sortable/>
-        <el-table-column label="栏目名称" sortable/>
-        <el-table-column label="资源类型"/>
-        <el-table-column label="资源相关性"/>
-        <el-table-column label="更新频率"/>
-        <el-table-column label="质量"/>
-        <el-table-column label="备注"/>
+        <el-table-column type="selection" width="35" />
+        <el-table-column label="栏目序号" sortable />
+        <el-table-column label="栏目名称" sortable />
+        <el-table-column label="资源类型" />
+        <el-table-column label="资源相关性" />
+        <el-table-column label="更新频率" />
+        <el-table-column label="质量" />
+        <el-table-column label="备注" />
       </el-table>
+
+      <el-row type="flex" justify="center">
+        <el-pagination
+          class="pagination"
+          :current-page="monitorSourceDetailDataCurrentPage"
+          :page-sizes="10"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="monitorSourceDetailData.length"
+        />
+      </el-row>
     </el-dialog>
 
     <el-dialog title="爬取日志详情" :visible.sync="crawlLogDetailDialogVisible">
       <el-form ref="form" :model="strategySettingForm" label-width="80px">
-        <el-form-item label="日期"/>
-        <el-form-item label="开始时间"/>
-        <el-form-item label="结束时间"/>
-        <el-form-item label="模式"/>
+        <el-form-item label="日期" />
+        <el-form-item label="开始时间" />
+        <el-form-item label="结束时间" />
+        <el-form-item label="模式" />
         <el-form-item label="数据">
           <el-button type="primary">一键下载</el-button>
           <el-button type="primary">数据预览</el-button>
@@ -615,32 +646,33 @@
       <el-table
         class="dataTable tb-edit"
         :data="
-          newsTableData.slice(
-            (currentPage - 1) * pageSize,
-            currentPage * pageSize
+          crawlLogDetailTableData.slice(
+            (crawlLogDetailTableDataCurrentPage - 1) * pageSize,
+            crawlLogDetailTableDataCurrentPage * pageSize
           )
         "
         highlight-current-row
         stripe="true"
         fit="true"
       >
-        <el-table-column label="序号" sortable/>
-        <el-table-column label="网站名称" sortable/>
-        <el-table-column label="栏目名称"/>
-        <el-table-column label="数据量"/>
-        <el-table-column label="状态"/>
-        <el-table-column label="备注"/>
+        <el-table-column label="序号" sortable />
+        <el-table-column label="网站名称" sortable />
+        <el-table-column label="栏目名称" />
+        <el-table-column label="数据量" />
+        <el-table-column label="状态" />
+        <el-table-column label="备注" />
       </el-table>
 
-      <el-pagination
-        class="pagination"
-        align="center"
-        :current-page="currentPage"
-        :page-sizes="[1, 5, 10, 20]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="newsTableData.length"
-      />
+      <el-row type="flex" justify="center">
+        <el-pagination
+          class="pagination"
+          :current-page="currentPage"
+          :page-sizes="10"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="newsTableData.length"
+        />
+      </el-row>
     </el-dialog>
   </el-main>
 </template>
@@ -663,8 +695,6 @@ export default {
       newsTableData: [],
       strategyTableData: [],
       crawlerLogTableData: [],
-      currentPage: 1, // 当前页码
-      total: 20, // 总条数
       pageSize: 10, // 每页的数据条数
       websiteValue: '', // 选中
       websiteList: [], // select框数据
@@ -681,6 +711,12 @@ export default {
       totalCount: 0,
       incrementCount: 0,
       decrementCount: 0,
+
+      newsTableDataCurrentPage: 1,
+      strategyTableDataCurrentPage: 1,
+      crawlerLogTableDataCurrentPage: 1,
+      crawlLogDetailTableDataCurrentPage: 1,
+      monitorSourceDetailDataCurrentPage: 1,
 
       addEntryForm: {
         websiteName: '',
@@ -714,6 +750,7 @@ export default {
         crawlingRadio: '自动模式',
         searchText: ''
       },
+      crawlLogDetailTableData: [],
 
       strategySettingDialogVisible: false,
       strategySettingForm: {
@@ -729,7 +766,7 @@ export default {
         column: '',
         urlList: []
       },
-      strategyList: [],
+      strategyList: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
 
       monitorSourceDetailDialogVisible: false,
       monitorSourceDetailForm: {
@@ -743,7 +780,8 @@ export default {
         addTime: '入库时间'
       },
 
-      crawlLogDetailDialogVisible: false
+      crawlLogDetailDialogVisible: false,
+      monitorSourceDetailData: []
     }
   },
   watch: {
