@@ -181,3 +181,17 @@ class getCrawlerStrategyLs(APIView):
         res['data'] = data
         res['code'] = 20000
         return Response(res)
+
+
+class modifyLog(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        res = {}
+        log = request.GET['log']
+        ret = modifyLogDetail(log)
+        if ret == 1:
+            res['code'] = 20000
+        else:
+            res['code'] = 30000
+        return Response(res)

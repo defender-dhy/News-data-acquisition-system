@@ -411,7 +411,7 @@
 
             <!--            <el-table-column label="数据量"/>-->
 
-            <el-table-column label="详情"/>
+            <el-table-column label="详情" prop="detail"/>
           </el-table>
         </el-card>
       </el-col>

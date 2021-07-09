@@ -10,3 +10,14 @@ export function getAllCrawlerLog(token, filter) {
     }
   })
 }
+
+export function modifyLog(token, log) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/modifyLog/',
+    method: 'post',
+    params: {
+      log: log
+    }
+  })
+}

@@ -1,6 +1,7 @@
 from utils.db import mongo_client
 import pymongo
 import json
+import pandas as pd
 
 
 def getXpathManage():
@@ -88,10 +89,31 @@ def modifyOneXpath(cont):
         mydb = myclient['cloud_academic']
         content = mydb['news_xpath']
         cont = json.loads(cont)
-        filter = {'_id': cont['_id']}
+        filter = {'web_url': cont['web_url']}
         del cont['_id']
         content.update_one(filter, {'$set': cont}, upsert=True)
         return 1
     except Exception as e:
         print(e)
         return 0
+
+
+def addXpathByFile(file):
+    # if not os.path.exists('./crawler'):
+    #     os.makedirs(settings.UPLOAD_ROOT)
+    try:
+        if file is None:
+            return HttpResponse('请选择要上传的文件')
+        temp_save_src = './crawler' + "/" + file.name
+        # 循环二进制写入
+        with open(temp_save_src, 'wb') as f:
+            for i in file.readlines():
+                f.write(i)
+    except Exception as e:
+        return HttpResponse(e)
+    df = pd.read_excel(temp_save_src)
+    myclient = pymongo.MongoClient(mongo_client)
+    mydb = myclient['cloud_academic']
+    content = mydb['news_xpath']
+    content.insert(json.loads(df.T.to_json()).values())
+
