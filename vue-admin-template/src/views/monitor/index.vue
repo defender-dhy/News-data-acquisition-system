@@ -14,7 +14,7 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.websiteNameChecked">
               <el-select
-                v-model="addEntryForm.websiteName"
+                v-model="selectForm.website_name"
                 filterable
                 reserve-keyword
                 placeholder="网站名称"
@@ -33,14 +33,14 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.websiteTypeChecked">
               <el-select
-                v-model="addEntryForm.websiteType"
+                v-model="selectForm.website_type"
                 filterable
                 reserve-keyword
                 placeholder="网站类型"
                 style="border-radius: 25%;"
               >
                 <el-option
-                  v-for="item in websiteList"
+                  v-for="item in websiteTypeLs"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -52,14 +52,14 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.countryChecked">
               <el-select
-                v-model="addEntryForm.country"
+                v-model="selectForm.website_country"
                 filterable
                 reserve-keyword
                 placeholder="国别"
                 style="border-radius: 25%;"
               >
                 <el-option
-                  v-for="item in websiteList"
+                  v-for="item in websiteCountryLs"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -71,14 +71,14 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.languageChecked">
               <el-select
-                v-model="addEntryForm.language"
+                v-model="selectForm.lang"
                 filterable
                 reserve-keyword
                 placeholder="语言"
                 style="border-radius: 25%;"
               >
                 <el-option
-                  v-for="item in websiteList"
+                  v-for="item in langLs"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -90,14 +90,14 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.fieldChecked">
               <el-select
-                v-model="addEntryForm.field"
+                v-model="selectForm.field"
                 filterable
                 reserve-keyword
                 placeholder="所属领域"
                 style="border-radius: 25%;"
               >
                 <el-option
-                  v-for="item in websiteList"
+                  v-for="item in fieldLs"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -109,7 +109,7 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.columnNameChecked">
               <el-select
-                v-model="columnValue"
+                v-model="selectForm.column"
                 filterable
                 reserve-keyword
                 placeholder="栏目名称"
@@ -128,7 +128,7 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.resourceTypeChecked">
               <el-select
-                v-model="resourceType"
+                v-model="selectForm.resource_type"
                 filterable
                 reserve-keyword
                 placeholder="资源类型"
@@ -147,14 +147,14 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.resourceRelevanceChecked">
               <el-select
-                v-model="addEntryForm.resourceRelevance"
+                v-model="selectForm.resource_corre"
                 filterable
                 reserve-keyword
                 placeholder="资源相关性"
                 style="border-radius: 25%;"
               >
                 <el-option
-                  v-for="item in websiteList"
+                  v-for="item in resourceCorreLs"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -166,14 +166,14 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.updateFrequencyChecked">
               <el-select
-                v-model="addEntryForm.updateFrequency"
+                v-model="selectForm.update_interval"
                 filterable
                 reserve-keyword
                 placeholder="更新频率"
                 style="border-radius: 25%;"
               >
                 <el-option
-                  v-for="item in websiteList"
+                  v-for="item in updateIntervalLs"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -185,14 +185,14 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.dataQualityChecked">
               <el-select
-                v-model="addEntryForm.dataQuality"
+                v-model="selectForm.resource_quality"
                 filterable
                 reserve-keyword
                 placeholder="数据质量"
                 style="border-radius: 25%;"
               >
                 <el-option
-                  v-for="item in websiteList"
+                  v-for="item in resourceQualityLs"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -204,7 +204,7 @@
           <el-form-item>
             <el-checkbox v-model="addEntryForm.storageTimeChecked">
               <el-select
-                v-model="addEntryForm.storageTime"
+                v-model="selectForm.storageTime"
                 filterable
                 reserve-keyword
                 placeholder="入库时间"
@@ -222,7 +222,7 @@
 
           <el-form-item>
             <el-input
-              v-model="addEntryForm.comment"
+              v-model="selectForm.comment"
               placeholder="注释"
               style="width: 300px"
             />
@@ -295,8 +295,11 @@
 
     <el-card shadow="never">
       <div slot="header" class="clearfix">
-        <span>监测源信息</span>
+        <span>监测源信息 </span>
         <!--            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+        <br></br>
+        <el-checkbox v-model="selectAllData"></el-checkbox>
+        <span> 全选</span>
       </div>
       <el-table
         class="dataTable tb-edit"
@@ -326,6 +329,20 @@
 
         <el-table-column v-if="addEntryForm.columnNameChecked" label="栏目名称" prop="column"/>
 
+        <el-table-column v-if="addEntryForm.websiteTypeChecked" label="网站类型" prop="website_type"/>
+
+        <el-table-column v-if="addEntryForm.resourceTypeChecked" label="资源类型" prop="resource_type"/>
+
+        <el-table-column v-if="addEntryForm.resourceRelevanceChecked" label="资源相关性" prop="resource_corre"/>
+
+        <el-table-column v-if="addEntryForm.updateFrequencyChecked" label="更新频率" prop="update_interval"/>
+
+        <el-table-column v-if="addEntryForm.dataQualityChecked" label="数据源质量" prop="resource_quality"/>
+
+        <el-table-column label="网站简介" prop="website_intro"/>
+
+        <el-table-column v-if="addEntryForm.commentChecked" label="备注" prop="others"/>
+
         <el-table-column label="详情"/>
       </el-table>
 
@@ -337,6 +354,7 @@
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="newsTableData.length"
+          @current-change="handlenewsTableCurrentChange"
         />
       </el-row>
     </el-card>
@@ -382,6 +400,7 @@
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
               :total="strategyTableData.length"
+              @current-change="handlestrategyTableCurrentChange"
             />
           </el-row>
         </el-card>
@@ -432,7 +451,8 @@
               :page-sizes="10"
               :page-size="pageSize"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="newsTableData.length"
+              :total="crawlerLogTableData.length"
+              @current-change="handlecrawlerLogTableCurrentChange"
             />
           </el-row>
         </el-card>
@@ -629,6 +649,7 @@
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="monitorSourceDetailData.length"
+          @current-change="handlemonitorSourceDetailCurrentChange"
         />
       </el-row>
     </el-dialog>
@@ -689,6 +710,7 @@
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="crawlLogDetailTableData.length"
+          @current-change="handlecrawlLogDetailTableCurrentChange"
         />
       </el-row>
     </el-dialog>
@@ -701,7 +723,8 @@ import {
   getXpathByColumn,
   getAllXpath,
   getXpathByName,
-  getXpathValueNameList
+  getXpathValueNameList,
+  getAllXpathValueNameList
 } from '@/api/newsCrawlerAll'
 import { addStrategy, getStrategyLs } from '@/api/crawlStrategy'
 import { getAllCrawlerLog } from '@/api/crawlLog'
@@ -709,6 +732,7 @@ import { getAllCrawlerLog } from '@/api/crawlLog'
 export default {
   data() {
     return {
+      selectAllData: false,
       name: '',
       newsTableData: [],
       strategyTableData: [{ name: '12' }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
@@ -723,6 +747,13 @@ export default {
       resourceTypeValue: '',
       resourceTypes: [],
       resourceTypeList: [],
+      websiteTypeLs: [],
+      websiteCountryLs: [],
+      fieldLs: [],
+      langLs: [],
+      resourceCorreLs: [],
+      updateIntervalLs: [],
+      resourceQualityLs: [],
       strategyNameLs: [],
       strategyBeginDateLs: [],
 
@@ -736,20 +767,22 @@ export default {
       crawlLogDetailTableDataCurrentPage: 1,
       monitorSourceDetailDataCurrentPage: 1,
 
-      addEntryForm: {
-        websiteName: '',
-        websiteType: '',
-        country: '',
-        language: '',
+      selectForm: {
+        website_name: '',
+        website_type: '',
+        website_country: '',
+        lang: '',
         field: '',
-        columnName: '',
-        resourceType: '',
-        resourceRelevance: '',
-        updateFrequency: '',
-        dataQuality: '',
+        column: '',
+        resource_type: '',
+        resource_corre: '',
+        update_interval: '',
+        resource_quality: '',
         storageTime: '',
-        comment: '',
+        comment: ''
+      },
 
+      addEntryForm: {
         websiteNameChecked: true,
         websiteTypeChecked: true,
         countryChecked: true,
@@ -782,7 +815,8 @@ export default {
         beginTime: '20:27',
         endTime: '20:30',
         column: '',
-        urlList: []
+        urlList: [],
+        selectForm: {}
       },
 
       monitorSourceDetailDialogVisible: false,
@@ -813,22 +847,51 @@ export default {
     }
   },
   mounted() {
-    getXpathValueNameList(this.token, 'column')
-      .then(response => {
-        this.columns = response['data']
-        this.columnList = this.columns.map(item => {
-          return { value: `${item}`, label: `${item}` }
-        })
+    // getXpathValueNameList(this.token, 'column')
+    //   .then(response => {
+    //     this.columns = response['data']
+    //     this.columnList = this.columns.map(item => {
+    //       return { value: `${item}`, label: `${item}` }
+    //     })
+    //   })
+    //   .catch()
+    // getXpathValueNameList(this.token, 'resource_type')
+    //   .then(response => {
+    //     this.resourceTypes = response['data']
+    //     this.resourceTypeList = this.resourceTypes.map(item => {
+    //       return { value: `${item}`, label: `${item}` }
+    //     })
+    //   })
+    //   .catch()
+    getAllXpathValueNameList(this.token).then(response => {
+      this.columnList = response['data']['column'].map(item => {
+        return { value: `${item}`, label: `${item}` }
       })
-      .catch()
-    getXpathValueNameList(this.token, 'resource_type')
-      .then(response => {
-        this.resourceTypes = response['data']
-        this.resourceTypeList = this.resourceTypes.map(item => {
-          return { value: `${item}`, label: `${item}` }
-        })
+      this.resourceTypeList = response['data']['resource_type'].map(item => {
+        return { value: `${item}`, label: `${item}` }
       })
-      .catch()
+      this.websiteTypeLs = response['data']['website_type'].map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+      this.websiteCountryLs = response['data']['website_country'].map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+      this.langLs = response['data']['lang'].map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+      this.fieldLs = response['data']['field'].map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+      this.resourceCorreLs = response['data']['resource_corre'].map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+      this.updateIntervalLs = response['data']['update_interval'].map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+      this.resourceQualityLs = response['data']['resource_quality'].map(item => {
+        return { value: `${item}`, label: `${item}` }
+      })
+    }).catch()
     getStrategyLs(this.token, 'name')
       .then(response => {
         let names = []
@@ -871,6 +934,7 @@ export default {
   },
   methods: {
     onSaveStrategy() {
+      this.strategySettingForm.selectForm = this.selectForm
       addStrategy(this.token, this.strategySettingForm)
     },
 
@@ -895,7 +959,34 @@ export default {
       this.crawlLogDetailDialogVisible = true
       this.crawlLogDetailForm = row
       console.log(row)
+    },
+    // handleSizeChange(val) {
+    //   // console.log(`每页 ${val} 条`)
+    //   this.currentPage = 1
+    //   this.pageSize = val
+    // },
+    // 当前页改变时触发 跳转其他页
+    handlenewsTableCurrentChange(val) {
+      // console.log(`当前页: ${val}`)
+      this.newsTableDataCurrentPage = val
+    },
+    handlestrategyTableCurrentChange(val) {
+      // console.log(`当前页: ${val}`)
+      this.strategyTableDataCurrentPage = val
+    },
+    handlecrawlerLogTableCurrentChange(val) {
+      // console.log(`当前页: ${val}`)
+      this.crawlerLogTableDataCurrentPage = val
+    },
+    handlecrawlLogDetailTableCurrentChange(val) {
+      // console.log(`当前页: ${val}`)
+      this.crawlLogDetailTableDataCurrentPage = val
+    },
+    handlemonitorSourceDetailCurrentChange(val) {
+      // console.log(`当前页: ${val}`)
+      this.monitorSourceDetailDataCurrentPage = val
     }
+
   }
 }
 </script>

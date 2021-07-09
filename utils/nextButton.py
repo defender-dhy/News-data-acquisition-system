@@ -16,7 +16,8 @@ res = []
 def processManage(manage):
     dic = {}
     for m in manage.find():
-        dic[m['字段名称英']] = {'crawler': m['需要爬取'], 'spec': m['是否在详情页'], 'saveName': m['数据库存储名字'], 'needSave': m['需要存储']}
+        dic[m['字段名称英']] = {'crawler': m['需要爬取'], 'spec': m['是否在详情页'], 'saveName': m['数据库存储名字'], 'needSave': m['需要存储'],
+                           'type': m['类型']}
     return dic
 
 

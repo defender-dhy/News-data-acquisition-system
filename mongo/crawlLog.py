@@ -48,7 +48,7 @@ def addCrawlerLog(log, speclogList):
     for l in speclogList:
         filter = {'开始日期': l['beginDate'], '开始时间': l['beginTime']}
         query = {'开始日期': l['beginDate'], '开始时间': l['beginTime'],
-                 '结束时间': l['endTime'], '网站url': l['urlList'], '模式': l['mode'], '网站名称': l['urlName'],
+                 '结束时间': l['endTime'], '模式': l['mode'], '网站名称': l['urlName'],
                  '状态': l['status'], '数据量': l['num'], '栏目名称': l['column'], '备注': ''}
         specLogSheet.update_one(filter, {'$set': query}, upsert=True)
     return

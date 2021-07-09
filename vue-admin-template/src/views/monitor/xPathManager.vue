@@ -5,20 +5,21 @@
         <span>X-Path 管理</span>
       </div>
       <el-table
-        :data="managetableList"
+        :data="managetableList.slice((managetableListCurrentPage - 1) * pageSize,
+            managetableListCurrentPage * pageSize)"
         element-loading-text="Loading"
         fit
         highlight-current-row
         @cell-dblclick="tableEdit"
       >
-        <el-table-column label="ID" prop="id" sortable />
-        <el-table-column label="类型" prop="type" sortable />
-        <el-table-column label="是否在详情页" prop="inSpec" sortable />
-        <el-table-column label="数据库存储名字" prop="saveName" sortable />
-        <el-table-column label="需要爬取" prop="needCrawl" sortable />
-        <el-table-column label="字段名称（英）" prop="EnglishName" sortable />
-        <el-table-column label="字段名称（中）" prop="ChineseName" sortable />
-        <el-table-column label="需要存储" prop="needSave" sortable />
+        <el-table-column label="ID" prop="id" sortable/>
+        <el-table-column label="类型" prop="type" sortable/>
+        <el-table-column label="是否在详情页" prop="inSpec" sortable/>
+        <el-table-column label="数据库存储名字" prop="saveName" sortable/>
+        <el-table-column label="需要爬取" prop="needCrawl" sortable/>
+        <el-table-column label="字段名称（英）" prop="EnglishName" sortable/>
+        <el-table-column label="字段名称（中）" prop="ChineseName" sortable/>
+        <el-table-column label="需要存储" prop="needSave" sortable/>
       </el-table>
       <el-row type="flex" justify="center" style="margin-top: 10px; margin-bottom: 30px">
         <el-col :span="3">
@@ -42,6 +43,7 @@
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="managetableList.length"
+          @current-change="handlemanagetableCurrentChange"
         />
       </el-row>
     </el-card>
@@ -150,40 +152,46 @@
       </el-form>
       <div>
         <el-table
-          :data="tableList.filter(item => item.type === '1' ? presentType1 : presentType0)"
+          :data="tableList.filter(item => item.type === '1' ? presentType1 : presentType0).slice((tableListCurrentPage - 1) * pageSize,
+            tableListCurrentPage * pageSize)"
           element-loading-text="Loading"
           border
           fit
           highlight-current-row
           @cell-dblclick="tableEdit1"
         >
-          <el-table-column label="_id" prop="_id" sortable />
-          <el-table-column label="button_xpath" prop="button_xpath" sortable />
-          <el-table-column label="column" prop="column" sortable />
-          <el-table-column label="content_url" prop="content_url" sortable />
-          <el-table-column label="content_xpath" prop="content_xpath" sortable />
-          <el-table-column label="lang" prop="lang" sortable />
-          <el-table-column label="resource_type" prop="resource_type" sortable />
-          <el-table-column label="time_xpath" prop="time_xpath" sortable />
-          <el-table-column label="title_xpath" prop="title_xpath" sortable />
-          <el-table-column label="type" prop="type" sortable />
-          <el-table-column label="update_interval" prop="update_interval" sortable />
-          <el-table-column label="web_url" prop="web_url" sortable />
-          <el-table-column label="website_name" prop="website_name" sortable />
-          <el-table-column label="writer_xpath" prop="writer_xpath" sortable />
-          <el-table-column label="article_xpath" prop="article_xpath" sortable />
-          <el-table-column label="time1_xpath" prop="time1_xpath" sortable />
-          <el-table-column label="writer1_xpath" prop="writer1_xpath" sortable />
-          <el-table-column label="prize_name" prop="prize_name" sortable />
-          <el-table-column label="prize_type" prop="prize_type" sortable />
-          <el-table-column label="prize_people" prop="prize_people" sortable />
-          <el-table-column label="prize_org" prop="prize_org" sortable />
-          <el-table-column label="prize_level" prop="prize_level" sortable />
-          <el-table-column label="prize_rank" prop="prize_rank" sortable />
-          <el-table-column label="combine" prop="combine" sortable />
-          <el-table-column label="source_xpath" prop="source_xpath" sortable />
-          <el-table-column label="source1_xpath" prop="source1_xpath" sortable />
-          <el-table-column label="button1_xpath" prop="button1_xpath" sortable />
+          <el-table-column label="_id" prop="_id" sortable/>
+          <el-table-column label="button_xpath" prop="button_xpath" sortable/>
+          <el-table-column label="column" prop="column" sortable/>
+          <el-table-column label="content_url" prop="content_url" sortable/>
+          <el-table-column label="content_xpath" prop="content_xpath" sortable/>
+          <el-table-column label="lang" prop="lang" sortable/>
+          <el-table-column label="resource_type" prop="resource_type" sortable/>
+          <el-table-column label="time_xpath" prop="time_xpath" sortable/>
+          <el-table-column label="title_xpath" prop="title_xpath" sortable/>
+          <el-table-column label="type" prop="type" sortable/>
+          <el-table-column label="update_interval" prop="update_interval" sortable/>
+          <el-table-column label="web_url" prop="web_url" sortable/>
+          <el-table-column label="website_name" prop="website_name" sortable/>
+          <el-table-column label="writer_xpath" prop="writer_xpath" sortable/>
+          <el-table-column label="article_xpath" prop="article_xpath" sortable/>
+          <el-table-column label="time1_xpath" prop="time1_xpath" sortable/>
+          <el-table-column label="writer1_xpath" prop="writer1_xpath" sortable/>
+          <el-table-column label="prize_name" prop="prize_name" sortable/>
+          <el-table-column label="prize_type" prop="prize_type" sortable/>
+          <el-table-column label="prize_people" prop="prize_people" sortable/>
+          <el-table-column label="prize_org" prop="prize_org" sortable/>
+          <el-table-column label="prize_level" prop="prize_level" sortable/>
+          <el-table-column label="prize_rank" prop="prize_rank" sortable/>
+          <el-table-column label="combine" prop="combine" sortable/>
+          <el-table-column label="source_xpath" prop="source_xpath" sortable/>
+          <el-table-column label="source1_xpath" prop="source1_xpath" sortable/>
+          <el-table-column label="button1_xpath" prop="button1_xpath" sortable/>
+          <el-table-column label="website_type" prop="website_type"/>
+          <el-table-column label="resource_corre" prop="resource_corre"/>
+          <el-table-column label="update_interval" prop="update_interval"/>
+          <el-table-column label="resource_quality" prop="resource_quality"/>
+          <el-table-column label="website_intro" prop="website_intro"/>
         </el-table>
         <el-row type="flex" justify="center" style="margin-top: 10px; margin-bottom: 30px">
           <el-col :span="3">
@@ -207,6 +215,7 @@
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="tableList.length"
+            @current-change="handletableListCurrentChange"
           />
         </el-row>
 
@@ -343,7 +352,13 @@ export default {
         }
       }
     },
-
+    handletableListCurrentChange(val) {
+      // console.log(`当前页: ${val}`)
+      this.tableListCurrentPage = val
+    },
+    handlemanagetableCurrentChange(val) {
+      this.managetableListCurrentPage = val
+    },
     validateXPathManagerAddForm(props, callback) {
       if (!props.every(text => !text.isEmpty())) {
         callback('Wrong')
@@ -353,7 +368,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.managetableList.push(this.xPathManagerAddForm);
+          this.managetableList.push(this.xPathManagerAddForm)
           this.xPathManagerAddForm = {}
         } else {
           return false

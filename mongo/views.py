@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework_jwt.serializers import jwt_payload_handler, jwt_encode_handler
 from rest_framework import permissions
-from mongo.utils import getColumnList, getWebSiteNameList, getXpathValueList
+from mongo.utils import *
 from istic import settings
 from django.views.decorators.csrf import csrf_exempt
 import time
@@ -46,6 +46,17 @@ class getXpathValueNameList(APIView):
     def get(self, request):
         res = {}
         res["data"] = getXpathValueList(request.GET['valuename'])
+        # print(res['data'])
+        res["code"] = 20000
+        return Response(res)
+
+
+class getAllXpathValueNameList(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        res = {}
+        res["data"] = getAllXpathValueList()
         # print(res['data'])
         res["code"] = 20000
         return Response(res)

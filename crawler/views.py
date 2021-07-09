@@ -16,6 +16,7 @@ from utils.moreButton import moreBtn_crawler
 from utils.nextButton import processManage
 import pymongo
 from mongo.crawlLog import *
+import json
 
 num = 0
 cnt = 0
@@ -210,15 +211,32 @@ class newsCrawlerMany(APIView):
         xpath_content = mydb['news_xpath']
         strategy_content = mydb['crawler_strategy']
         manage = mydb['news_xpath_manage']
-        myquery = {"策略名称": request.GET['strategy_name'], "开始日期": request.GET['beginDate']}
+        myquery = {}
+        if request.GET['strategy_name'] != '':
+            myquery['策略名称'] = request.GET['strategy_name']
+        if request.GET['beginDate'] != '':
+            myquery['开始日期'] = request.GET['beginDate']
+        print(myquery)
         strategy_info = strategy_content.find_one(myquery)
-        column = strategy_info['栏目名称']
+        rawfilter = strategy_info['过滤器']
+        filter = {}
+        cnt = 0
+        for k in rawfilter.keys():
+            if rawfilter[k] != '':
+                filter[k] = rawfilter[k]
+                cnt += 1
+        print(filter)
         xpathLs = None
-        n = 0
-        if column != '':
-            query = {'column': column}
-            xpathLs = xpath_content.find(query)
-            n = xpathLs.count()
+        if cnt == 0:
+            xpathLs = xpath_content.find()
+        else:
+            xpathLs = xpath_content.find(filter)
+        n = xpathLs.count()
+        print(n)
+        # column = strategy_info['栏目名称']
+        # if column != '':
+        #     query = {'column': column}
+        #     xpathLs = xpath_content.find(query)
         resList = []
         specLogList = []
         xpathInfo = processManage(manage)

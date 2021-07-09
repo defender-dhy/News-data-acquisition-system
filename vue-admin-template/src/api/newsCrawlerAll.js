@@ -56,6 +56,15 @@ export function getXpathValueNameList(token, valuename) {
   })
 }
 
+export function getAllXpathValueNameList(token) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/getAllXpathValueNameList/',
+    method: 'get',
+    params: {}
+  })
+}
+
 export function getXpathManage(token) {
   return request({
     // url: '/vue-admin-template/user/info',
