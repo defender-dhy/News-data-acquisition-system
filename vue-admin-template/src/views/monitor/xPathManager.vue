@@ -20,7 +20,7 @@
         <el-table-column label="字段名称（中）" prop="ChineseName" sortable />
         <el-table-column label="需要存储" prop="needSave" sortable />
       </el-table>
-      <el-row type="flex" justify="center" style="margin-top: 10px">
+      <el-row type="flex" justify="center" style="margin-top: 10px; margin-bottom: 30px">
         <el-col :span="3">
           <el-button
             type="primary"
@@ -32,6 +32,17 @@
             新增
           </el-button>
         </el-col>
+      </el-row>
+
+      <el-row type="flex" justify="center">
+        <el-pagination
+          class="pagination"
+          :current-page="managetableListCurrentPage"
+          :page-sizes="10"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="managetableList.length"
+        />
       </el-row>
     </el-card>
 
@@ -121,9 +132,16 @@
       <div slot="header" class="clearfix">
         <span>X-Path 信息</span>
       </div>
-      <el-form :inline="true">
+      <el-form :inline="true" style="padding-bottom: 20px">
         <el-form-item>
-          <el-button type="primary" size="small">上传文档</el-button>
+          <el-upload
+            action="https://jsonplaceholder.typicode.com/posts/"
+            :limit="1"
+            :on-success="(response, file, fileList) => this.$message({message: '上传成功', type: 'success'})"
+            :on-error="(err, file, fileList) => this.$message({message: '上传成功', type: 'success'})"
+          >
+            <el-button size="small" type="primary">上传文档</el-button>
+          </el-upload>
         </el-form-item>
         <el-form-item>
           <el-checkbox v-model="presentType0">显示类型 0</el-checkbox>
@@ -167,7 +185,7 @@
           <el-table-column label="source1_xpath" prop="source1_xpath" sortable />
           <el-table-column label="button1_xpath" prop="button1_xpath" sortable />
         </el-table>
-        <el-row type="flex" justify="center" style="margin-top: 10px">
+        <el-row type="flex" justify="center" style="margin-top: 10px; margin-bottom: 30px">
           <el-col :span="3">
             <el-button
               type="primary"
@@ -180,6 +198,18 @@
             </el-button>
           </el-col>
         </el-row>
+
+        <el-row type="flex" justify="center">
+          <el-pagination
+            class="pagination"
+            :current-page="tableListCurrentPage"
+            :page-sizes="10"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="tableList.length"
+          />
+        </el-row>
+
       </div>
     </el-card>
 
@@ -215,6 +245,10 @@ import { validUsername } from '@/utils/validate'
 export default {
   data() {
     return {
+      pageSize: 10,
+      managetableListCurrentPage: 1,
+      tableListCurrentPage: 1,
+
       presentType0: true,
       presentType1: true,
 

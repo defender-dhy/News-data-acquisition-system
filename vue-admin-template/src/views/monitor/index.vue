@@ -259,8 +259,7 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              />
             </el-select>
             <el-select v-model="strategySettingForm.beginDate" placeholder="请选择" size="mini">
               <el-option
@@ -268,8 +267,7 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              />
             </el-select>
           </el-form-item>
 
@@ -281,7 +279,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" @click="onCrawler" size="mini">爬取</el-button>
+            <el-button type="primary" size="mini" @click="onCrawler">爬取</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -304,8 +302,8 @@
         class="dataTable tb-edit"
         :data="
           newsTableData.slice(
-            (currentPage - 1) * pageSize,
-            currentPage * pageSize
+            (newsTableDataCurrentPage - 1) * pageSize,
+            newsTableDataCurrentPage * pageSize
           )
         "
         highlight-current-row
@@ -334,8 +332,8 @@
       <el-row type="flex" justify="center">
         <el-pagination
           class="pagination"
-          :current-page="currentPage"
-          :page-sizes="[1, 5, 10, 20]"
+          :current-page="newsTableDataCurrentPage"
+          :page-sizes="10"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="newsTableData.length"
@@ -354,13 +352,14 @@
             class="dataTable tb-edit"
             :data="
               strategyTableData.slice(
-                (currentPage - 1) * pageSize,
-                currentPage * pageSize
+                (strategyTableDataCurrentPage - 1) * pageSize,
+                strategyTableDataCurrentPage * pageSize
               )
             "
             highlight-current-row
             stripe="true"
             fit="true"
+            @row-dblclick="showStrategySettingDetail"
           >
             <el-table-column label="策略名称" prop="name" sortable/>
 
@@ -374,6 +373,17 @@
 
             <el-table-column label="停止时间" prop="endTime"/>
           </el-table>
+
+          <el-row type="flex" justify="center">
+            <el-pagination
+              class="pagination"
+              :current-page="strategyTableDataCurrentPage"
+              :page-sizes="10"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="strategyTableData.length"
+            />
+          </el-row>
         </el-card>
       </el-col>
 
@@ -387,13 +397,14 @@
             class="dataTable tb-edit"
             :data="
               crawlerLogTableData.slice(
-                (currentPage - 1) * pageSize,
-                currentPage * pageSize
+                (crawlerLogTableDataCurrentPage - 1) * pageSize,
+                crawlerLogTableDataCurrentPage * pageSize
               )
             "
             highlight-current-row
             stripe="true"
             fit="true"
+            @row-dblclick="showCrawlerLogTableData"
           >
             <el-table-column label="日期" prop="beginDate" sortable/>
 
@@ -413,6 +424,17 @@
 
             <el-table-column label="详情" prop="detail"/>
           </el-table>
+
+          <el-row type="flex" justify="center">
+            <el-pagination
+              class="pagination"
+              :current-page="crawlerLogTableDataCurrentPage"
+              :page-sizes="10"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="newsTableData.length"
+            />
+          </el-row>
         </el-card>
       </el-col>
     </el-row>
@@ -580,9 +602,9 @@
       <el-table
         class="dataTable tb-edit"
         :data="
-          newsTableData.slice(
-            (currentPage - 1) * pageSize,
-            currentPage * pageSize
+          monitorSourceDetailData.slice(
+            (monitorSourceDetailDataCurrentPage - 1) * pageSize,
+            monitorSourceDetailDataCurrentPage * pageSize
           )
         "
         highlight-current-row
@@ -598,14 +620,41 @@
         <el-table-column label="质量"/>
         <el-table-column label="备注"/>
       </el-table>
+
+      <el-row type="flex" justify="center">
+        <el-pagination
+          class="pagination"
+          :current-page="monitorSourceDetailDataCurrentPage"
+          :page-sizes="10"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="monitorSourceDetailData.length"
+        />
+      </el-row>
     </el-dialog>
 
     <el-dialog title="爬取日志详情" :visible.sync="crawlLogDetailDialogVisible">
-      <el-form ref="form" :model="strategySettingForm" label-width="80px">
-        <el-form-item label="日期"/>
-        <el-form-item label="开始时间"/>
-        <el-form-item label="结束时间"/>
-        <el-form-item label="模式"/>
+      <el-form ref="form" :model="crawlLogDetailForm" label-width="80px">
+        <el-form-item label="日期">
+          <span>
+            {{ crawlLogDetailForm.beginDate }}
+          </span>
+        </el-form-item>
+        <el-form-item label="开始时间">
+          <span>
+            {{ crawlLogDetailForm.beginTime }}
+          </span>
+        </el-form-item>
+        <el-form-item label="结束时间">
+          <span>
+            {{ crawlLogDetailForm.endDate }}
+          </span>
+        </el-form-item>
+        <el-form-item label="模式">
+          <span>
+            {{ crawlLogDetailForm.mode }}
+          </span>
+        </el-form-item>
         <el-form-item label="数据">
           <el-button type="primary">一键下载</el-button>
           <el-button type="primary">数据预览</el-button>
@@ -615,32 +664,33 @@
       <el-table
         class="dataTable tb-edit"
         :data="
-          newsTableData.slice(
-            (currentPage - 1) * pageSize,
-            currentPage * pageSize
+          crawlLogDetailTableData.slice(
+            (crawlLogDetailTableDataCurrentPage - 1) * pageSize,
+            crawlLogDetailTableDataCurrentPage * pageSize
           )
         "
         highlight-current-row
         stripe="true"
         fit="true"
       >
-        <el-table-column label="序号" sortable/>
-        <el-table-column label="网站名称" sortable/>
-        <el-table-column label="栏目名称"/>
-        <el-table-column label="数据量"/>
-        <el-table-column label="状态"/>
-        <el-table-column label="备注"/>
+        <el-table-column label="序号" prop="index" sortable/>
+        <el-table-column label="网站名称" prop="websiteName" sortable/>
+        <el-table-column label="栏目名称" prop="columnName"/>
+        <el-table-column label="数据量" prop="dataSize"/>
+        <el-table-column label="状态" prop="status"/>
+        <el-table-column label="备注" prop="comment"/>
       </el-table>
 
-      <el-pagination
-        class="pagination"
-        align="center"
-        :current-page="currentPage"
-        :page-sizes="[1, 5, 10, 20]"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="newsTableData.length"
-      />
+      <el-row type="flex" justify="center">
+        <el-pagination
+          class="pagination"
+          :current-page="crawlLogDetailTableDataCurrentPage"
+          :page-sizes="10"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="crawlLogDetailTableData.length"
+        />
+      </el-row>
     </el-dialog>
   </el-main>
 </template>
@@ -661,10 +711,8 @@ export default {
     return {
       name: '',
       newsTableData: [],
-      strategyTableData: [],
-      crawlerLogTableData: [],
-      currentPage: 1, // 当前页码
-      total: 20, // 总条数
+      strategyTableData: [{ name: '12' }, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}],
+      crawlerLogTableData: [{ mode: 1 }, {}],
       pageSize: 10, // 每页的数据条数
       websiteValue: '', // 选中
       websiteList: [], // select框数据
@@ -681,6 +729,12 @@ export default {
       totalCount: 0,
       incrementCount: 0,
       decrementCount: 0,
+
+      newsTableDataCurrentPage: 1,
+      strategyTableDataCurrentPage: 1,
+      crawlerLogTableDataCurrentPage: 1,
+      crawlLogDetailTableDataCurrentPage: 1,
+      monitorSourceDetailDataCurrentPage: 1,
 
       addEntryForm: {
         websiteName: '',
@@ -714,6 +768,7 @@ export default {
         crawlingRadio: '自动模式',
         searchText: ''
       },
+      crawlLogDetailTableData: [],
 
       strategySettingDialogVisible: false,
       strategySettingForm: {
@@ -729,7 +784,6 @@ export default {
         column: '',
         urlList: []
       },
-      strategyList: [],
 
       monitorSourceDetailDialogVisible: false,
       monitorSourceDetailForm: {
@@ -743,7 +797,10 @@ export default {
         addTime: '入库时间'
       },
 
-      crawlLogDetailDialogVisible: false
+      crawlLogDetailDialogVisible: false,
+      monitorSourceDetailData: [],
+
+      crawlLogDetailForm: {}
     }
   },
   watch: {
@@ -827,6 +884,17 @@ export default {
         this.strategySettingForm.name,
         this.strategySettingForm.beginDate
       )
+    },
+
+    showStrategySettingDetail(row, column, event) {
+      this.strategySettingDialogVisible = true
+      this.strategySettingForm = row
+    },
+
+    showCrawlerLogTableData(row, column, event) {
+      this.crawlLogDetailDialogVisible = true
+      this.crawlLogDetailForm = row
+      console.log(row)
     }
   }
 }
