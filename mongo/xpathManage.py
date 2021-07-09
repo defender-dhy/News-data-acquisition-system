@@ -110,11 +110,11 @@ def addXpathByFile(file):
         with open(temp_save_src, 'wb') as f:
             for i in file.readlines():
                 f.write(i)
+        df = pd.read_excel(temp_save_src)
+        myclient = pymongo.MongoClient(mongo_client)
+        mydb = myclient['cloud_academic']
+        content = mydb['news_xpath']
+        content.insert(json.loads(df.T.to_json()).values())
+        return 1
     except Exception as e:
-        return HttpResponse(e)
-    df = pd.read_excel(temp_save_src)
-    myclient = pymongo.MongoClient(mongo_client)
-    mydb = myclient['cloud_academic']
-    content = mydb['news_xpath']
-    content.insert(json.loads(df.T.to_json()).values())
-
+        return 0

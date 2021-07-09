@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^modifyOneSpecXpath/$', views.modifyOneSpecXpath.as_view()),
     url(r'^modifyLog/$', views.modifyLog.as_view()),
     url(r'^getAllXpathValueNameList/$', views.getAllXpathValueNameList.as_view()),
+    url(r'^addXpathByFile/$', views.addXpathByFile.as_view()),
 ]
