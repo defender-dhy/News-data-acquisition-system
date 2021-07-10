@@ -229,7 +229,8 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" icon="el-icon-circle-plus-outline">添加</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="onClickSearch">查询</el-button>
+            <el-button type="primary" icon="el-icon-delete" @click="onClickDelete">清除选择</el-button>
           </el-form-item>
         </el-form>
       </el-card>
@@ -722,6 +723,7 @@ import {
   newsCrawlerMany,
   getXpathByColumn,
   getAllXpath,
+  getManyXpath,
   getXpathByName,
   getXpathValueNameList,
   getAllXpathValueNameList
@@ -838,13 +840,18 @@ export default {
     }
   },
   watch: {
-    columnValue(newValue, oldValue) {
-      getXpathByColumn(this.token, newValue)
-        .then(response => {
-          this.newsTableData = response['data']
-        })
-        .catch()
-    }
+    // columnValue(newValue, oldValue) {
+    //   getXpathByColumn(this.token, newValue)
+    //     .then(response => {
+    //       this.newsTableData = response['data']
+    //     })
+    //     .catch()
+    // },
+    // selectForm(newValue, oidValue) {
+    //   getManyXpath(this.token, newValue).then(response => {
+    //     this.newsTableData = response['data']
+    //   })
+    // }
   },
   mounted() {
     // getXpathValueNameList(this.token, 'column')
@@ -936,6 +943,42 @@ export default {
     onSaveStrategy() {
       this.strategySettingForm.selectForm = this.selectForm
       addStrategy(this.token, this.strategySettingForm)
+      this.$message({
+        message: '保存策略成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+
+    onClickSearch() {
+      getManyXpath(this.token, this.selectForm).then(response => {
+        this.newsTableData = response['data']
+      })
+      this.$message({
+        message: '查询成功',
+        type: 'success'
+      })
+    },
+
+    onClickDelete() {
+      this.selectForm = {
+        website_name: '',
+        website_type: '',
+        website_country: '',
+        lang: '',
+        field: '',
+        column: '',
+        resource_type: '',
+        resource_corre: '',
+        update_interval: '',
+        resource_quality: '',
+        storageTime: '',
+        comment: ''
+      }
+      this.$message({
+        message: '清除选择成功',
+        type: 'success'
+      })
     },
 
     onChooseStrategy() {
@@ -948,6 +991,10 @@ export default {
         this.strategySettingForm.name,
         this.strategySettingForm.beginDate
       )
+      this.$message({
+        message: '爬取结束',
+        type: 'success'
+      })
     },
 
     showStrategySettingDetail(row, column, event) {

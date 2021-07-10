@@ -148,10 +148,10 @@
             <el-button size="small" type="primary">上传文档</el-button>
           </el-upload>
         </el-form-item>
-<!--        <el-form-item>-->
-<!--          <input type="file" id="img"><br>-->
-<!--          <button type="submit" @click.prevent="on_sumit">添加</button>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item>-->
+        <!--          <input type="file" id="img"><br>-->
+        <!--          <button type="submit" @click.prevent="on_sumit">添加</button>-->
+        <!--        </el-form-item>-->
         <el-form-item>
           <el-checkbox v-model="presentType0">显示类型 0</el-checkbox>
           <el-checkbox v-model="presentType1">显示类型 1</el-checkbox>
@@ -332,11 +332,16 @@ export default {
         cellInput.onblur = function() {
           const onblurCont = `<div class="cell">${cellInput.value}</div>`
           cell.innerHTML = onblurCont // 换成原有的显示内容
+          this.$message({
+            message: '修改字段管理成功',
+            type: 'success'
+          })
           // 调用axios接口
           console.log(column)
           row[column['property']] = cellInput.value
           console.log(cellInput.value)
-          modifyXpathManage(this.token, row)
+          modifyXpathManage(this.token, row).then(response => {
+          })
           console.log(row)
         }
       }
@@ -361,7 +366,12 @@ export default {
           if (column['property'] !== '_id') {
             row[column['property']] = cellInput.value
           }
-          modifyOneSpecXpath(this.token, row)
+          modifyOneSpecXpath(this.token, row).then(response => {
+            this.$message({
+              message: '修改具体字段成功',
+              type: 'success'
+            })
+          })
         }
       }
     },
@@ -397,6 +407,10 @@ export default {
         }
       }).then(res => {
         console.log(res)
+      })
+      this.$message({
+        message: '上传数据成功',
+        type: 'success'
       })
     },
     handletableListCurrentChange(val) {

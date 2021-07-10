@@ -124,6 +124,26 @@ class getXpathByName(APIView):
         return Response(res)
 
 
+class getXpathByQuery(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        res = {}
+        query = json.loads(request.GET['query'])
+        filter = {}
+        cnt = 0
+        for k in query.keys():
+            if query[k] != '':
+                filter[k] = query[k]
+                cnt += 1
+        if cnt == 0:
+            res['data'] = getXpathList(None)
+        else:
+            res['data'] = getXpathList(filter)
+        res['code'] = 20000
+        return Response(res)
+
+
 class manageSpecXpath(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -188,7 +208,7 @@ class crawlerSpecLog(APIView):
         res['data'] = getAllSpecCrawlerLog(request.GET['filter'])
         res['code'] = 20000
         return Response(res)
-    
+
 
 class getCrawlerStrategyLs(APIView):
     permission_classes = (permissions.IsAuthenticated,)

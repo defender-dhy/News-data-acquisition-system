@@ -34,6 +34,17 @@ export function getXpathByName(token, website_name) {
   })
 }
 
+export function getManyXpath(token, query) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/getManyXpath/',
+    method: 'get',
+    params: {
+      query: query
+    }
+  })
+}
+
 export function getAllXpath(token) {
   return request({
     // url: '/vue-admin-template/user/info',
