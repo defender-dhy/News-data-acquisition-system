@@ -143,12 +143,13 @@ class manageSpecXpath(APIView):
         return Response(res)
 
 
-class addXpathByFile(APIView):
+class uploadXpathByFile(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         res = {}
-        ret = addXpathByFile(request.GET['file'])
+        file = request.FILES.get('file')
+        ret = addXpathByFile(file)
         if ret == 1:
             res['code'] = 20000
         else:
@@ -187,7 +188,7 @@ class crawlerSpecLog(APIView):
         res['data'] = getAllSpecCrawlerLog(request.GET['filter'])
         res['code'] = 20000
         return Response(res)
-
+    
 
 class getCrawlerStrategyLs(APIView):
     permission_classes = (permissions.IsAuthenticated,)

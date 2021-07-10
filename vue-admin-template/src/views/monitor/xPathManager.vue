@@ -137,14 +137,21 @@
       <el-form :inline="true" style="padding-bottom: 20px">
         <el-form-item>
           <el-upload
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :limit="1"
+            :headers="headers"
+            action="http://127.0.0.1:8000/api/mongo/addXpathByFile/"
+            :limit="3"
+            name="file"
             :on-success="(response, file, fileList) => this.$message({message: '上传成功', type: 'success'})"
             :on-error="(err, file, fileList) => this.$message({message: '上传成功', type: 'success'})"
+            :http-request="uploadSectionFile"
           >
             <el-button size="small" type="primary">上传文档</el-button>
           </el-upload>
         </el-form-item>
+<!--        <el-form-item>-->
+<!--          <input type="file" id="img"><br>-->
+<!--          <button type="submit" @click.prevent="on_sumit">添加</button>-->
+<!--        </el-form-item>-->
         <el-form-item>
           <el-checkbox v-model="presentType0">显示类型 0</el-checkbox>
           <el-checkbox v-model="presentType1">显示类型 1</el-checkbox>
@@ -245,11 +252,14 @@ import {
   getXpathValueNameList,
   modifyOneSpecXpath,
   getXpathManage,
-  modifyXpathManage
+  modifyXpathManage,
+  addXpathByFile
 } from '@/api/newsCrawlerAll'
 import { addStrategy, getStrategyLs } from '@/api/crawlStrategy'
 import { getAllCrawlerLog } from '@/api/crawlLog'
 import { validUsername } from '@/utils/validate'
+import axios from 'axios'
+import request from '@/utils/request'
 
 export default {
   data() {
@@ -257,7 +267,10 @@ export default {
       pageSize: 10,
       managetableListCurrentPage: 1,
       tableListCurrentPage: 1,
-
+      headers: {
+        'content-type': 'multipart/form-data',
+        'authenticate': this.token
+      },
       presentType0: true,
       presentType1: true,
 
@@ -351,6 +364,40 @@ export default {
           modifyOneSpecXpath(this.token, row)
         }
       }
+    },
+    on_sumit() {
+      var form_data = new FormData()
+      var file = document.getElementById('img').files[0]
+      console.log(file)
+      form_data.append('file', file)
+      // form_data.append('fileName', file.name)
+      request({
+        url: '/mongo/addXpathByFile/',
+        method: 'post',
+        data: form_data,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(res => {
+        console.log(res)
+      })
+    },
+    uploadSectionFile(param) {
+      var form_data = new FormData()
+      var file = param.file
+      console.log(file)
+      form_data.append('file', file)
+      // form_data.append('fileName', file.name)
+      request({
+        url: '/mongo/addXpathByFile/',
+        method: 'post',
+        data: form_data,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(res => {
+        console.log(res)
+      })
     },
     handletableListCurrentChange(val) {
       // console.log(`当前页: ${val}`)

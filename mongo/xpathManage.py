@@ -102,6 +102,7 @@ def modifyOneXpath(cont):
 def addXpathByFile(file):
     # if not os.path.exists('./crawler'):
     #     os.makedirs(settings.UPLOAD_ROOT)
+    # print(file)
     try:
         if file is None:
             return HttpResponse('请选择要上传的文件')
@@ -111,10 +112,32 @@ def addXpathByFile(file):
             for i in file.readlines():
                 f.write(i)
         df = pd.read_excel(temp_save_src)
+        #遇到读不出来excel的问题:更换xlrd版本
         myclient = pymongo.MongoClient(mongo_client)
         mydb = myclient['cloud_academic']
         content = mydb['news_xpath']
-        content.insert(json.loads(df.T.to_json()).values())
+        querys=json.loads(df.T.to_json()).values()
+        # content.insert(json.loads(df.T.to_json()).values())
+        for query in querys:
+            filter = {'web_url':query['web_url']}
+            del query['_id']
+            content.update_one(filter, {'$set': query}, upsert=True)
         return 1
+    # try:
+    #     if file is None:
+    #         return HttpResponse('请选择要上传的文件')
+    #     temp_save_src = './crawler' + "/" + file.name
+    #     # 循环二进制写入
+    #     with open(temp_save_src, 'wb') as f:
+    #         for i in file.readlines():
+    #             f.write(i)
+    #     df = pd.read_excel(temp_save_src)
+    #     myclient = pymongo.MongoClient(mongo_client)
+    #     mydb = myclient['cloud_academic']
+    #     content = mydb['news_xpath']
+    #     content.insert(json.loads(df.T.to_json()).values())
+    #     return 1
     except Exception as e:
+        print(e)
+        print('Wrong')
         return 0

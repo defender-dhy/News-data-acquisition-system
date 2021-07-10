@@ -697,9 +697,9 @@
         <el-table-column label="序号" prop="index" sortable/>
         <el-table-column label="网站名称" prop="websiteName" sortable/>
         <el-table-column label="栏目名称" prop="columnName"/>
-        <el-table-column label="数据量" prop="dataSize"/>
+        <el-table-column label="数据量" prop="num"/>
         <el-table-column label="状态" prop="status"/>
-        <el-table-column label="备注" prop="comment"/>
+        <el-table-column label="备注" prop="detail"/>
       </el-table>
 
       <el-row type="flex" justify="center">
@@ -727,7 +727,7 @@ import {
   getAllXpathValueNameList
 } from '@/api/newsCrawlerAll'
 import { addStrategy, getStrategyLs } from '@/api/crawlStrategy'
-import { getAllCrawlerLog } from '@/api/crawlLog'
+import { getAllCrawlerLog, getAllSpecCrawlerLog } from '@/api/crawlLog'
 
 export default {
   data() {
@@ -958,6 +958,11 @@ export default {
     showCrawlerLogTableData(row, column, event) {
       this.crawlLogDetailDialogVisible = true
       this.crawlLogDetailForm = row
+      getAllSpecCrawlerLog(this.token, row).then(response => {
+        this.crawlLogDetailTableData = response['data'].map(item => {
+          return { value: `${item}`, label: `${item}` }
+        })
+      }).catch()
       console.log(row)
     },
     // handleSizeChange(val) {

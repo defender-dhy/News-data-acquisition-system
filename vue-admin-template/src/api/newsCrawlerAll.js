@@ -95,6 +95,16 @@ export function modifyOneSpecXpath(token, cont) {
   })
 }
 
+export function addXpathByFile(token, file) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/addXpathByFile/',
+    method: 'post',
+    params: {
+      file: file
+    }
+  })
+}
 
 
 

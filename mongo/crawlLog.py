@@ -1,5 +1,6 @@
 from utils.db import mongo_client
 import pymongo
+import json
 
 
 def getAllCrawlerLog(filter):
@@ -25,12 +26,14 @@ def getAllSpecCrawlerLog(rawfilter):
         findCont = content.find()
     else:
         filter = {}
+        rawfilter = json.loads(rawfilter)
         filter['开始日期'] = rawfilter['beginDate']
         filter['开始时间'] = rawfilter['beginTime']
         findCont = content.find(filter)
     for c in findCont:
         dic = {'beginDate': c['开始日期'], 'beginTime': c['开始时间'], 'endTime': '结束时间',
-               'mode': c['模式'], 'urlList': c['网站url列表'], 'strategyName': c['策略名称'], 'num': c['爬取数量'], 'detail': c['备注']}
+               'mode': c['模式'], 'num': c['数据量'], 'detail': c['备注'],
+               'status': c['状态'], 'column': c['栏目名称'], 'websiteName': c['网站名称']}
         ls.append(dic)
     return ls
 

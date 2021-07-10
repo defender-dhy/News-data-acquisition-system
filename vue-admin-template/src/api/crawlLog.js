@@ -11,6 +11,17 @@ export function getAllCrawlerLog(token, filter) {
   })
 }
 
+export function getAllSpecCrawlerLog(token, filter) {
+  return request({
+    // url: '/vue-admin-template/user/info',
+    url: '/mongo/crawlerSpecLog/',
+    method: 'get',
+    params: {
+      filter: filter
+    }
+  })
+}
+
 export function modifyLog(token, log) {
   return request({
     // url: '/vue-admin-template/user/info',

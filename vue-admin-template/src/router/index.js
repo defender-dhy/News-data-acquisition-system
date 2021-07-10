@@ -57,6 +57,28 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
+    redirect: '/mainPage',
+    children: [{
+      path: 'mainPage',
+      name: 'mainPage',
+      component: () => import('@/views/monitor/index'),
+      meta: { title: '主操作', icon: 'el-icon-menu' }
+    }]
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/xpathManage',
+    children: [{
+      path: 'xpathManage',
+      name: 'xpathManage',
+      component: () => import('@/views/monitor/xPathManager'),
+      meta: { title: '监测源字段管理', icon: 'el-icon-edit-outline' }
+    }]
+  },
+  {
+    path: '/',
+    component: Layout,
     redirect: '/newsCrawlerAll',
     children: [{
       path: 'newsCrawlerAll',
@@ -73,42 +95,20 @@ export const constantRoutes = [
       path: 'newsCrawler',
       name: 'newsCrawler',
       component: () => import('@/views/crawler/newsCrawler'),
-      meta: { title: '新闻爬虫', icon: 'el-icon-circle-plus' }
+      meta: { title: '新闻数据具体爬取', icon: 'el-icon-plus' }
     }]
   },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/wechatCrawler',
-    children: [{
-      path: 'wechatCrawler',
-      name: 'wechatCrawler',
-      component: () => import('@/views/crawler/wechatCrawler'),
-      meta: { title: '微信公众号爬虫', icon: 'el-icon-circle-plus' }
-    }]
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/mainPage',
-    children: [{
-      path: 'mainPage',
-      name: 'mainPage',
-      component: () => import('@/views/monitor/index'),
-      meta: { title: '监测源列表', icon: 'el-icon-circle-plus' }
-    }]
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/xpathManage',
-    children: [{
-      path: 'xpathManage',
-      name: 'xpathManage',
-      component: () => import('@/views/monitor/xPathManager'),
-      meta: { title: '监测源字段管理', icon: 'el-icon-circle-plus' }
-    }]
-  },
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/wechatCrawler',
+  //   children: [{
+  //     path: 'wechatCrawler',
+  //     name: 'wechatCrawler',
+  //     component: () => import('@/views/crawler/wechatCrawler'),
+  //     meta: { title: '微信公众号爬虫', icon: 'el-icon-circle-plus' }
+  //   }]
+  // },
   // {
   //   path: '/',
   //   component: Layout,
